@@ -64,7 +64,10 @@ int main()
 	glEnable              ( GL_DEBUG_OUTPUT );
 	glDebugMessageCallback( MessageCallback, 0 );
 
+	sprites mySprite;
+	sprites *spritePtr = &mySprite;
 
+	InitSprites(spritePtr);
 	// Setting main game loop
 	while(!glfwWindowShouldClose(mainWindow))
 	{
@@ -73,7 +76,7 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		// All draw calls should be issued here
-		
+		DrawSprites(spritePtr);
 
 		glfwSwapBuffers(mainWindow);
 	}

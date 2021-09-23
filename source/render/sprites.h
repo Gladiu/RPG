@@ -1,3 +1,4 @@
+#pragma once
 #include "../common.h"
 
 typedef struct sprites
@@ -9,6 +10,6 @@ typedef struct sprites
 }sprites;
 
 
-void InitSprites();
+void InitSprites(sprites* inputSprite);
 
-void DrawSprites();
+void DrawSprites(sprites* inputSprite);

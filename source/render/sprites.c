@@ -3,6 +3,7 @@
 #include "sprites.h"
 #include "shader.h"
 #include "../common.h"
+#include <cglm/cglm.h>
 
 void InitSprites(sprites* inputSprite)
 {

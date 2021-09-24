@@ -9,5 +9,6 @@ const char *genericFragmentShader =
 const char *genericVertexShader = 
 	"#version 330 core\n"
 	"layout (location = 0) in vec3 position;\n"
+	"uniform mat4 transform;\n"
 	"void main()\n"
-	"{gl_Position = vec4(position.x, position.y, position.z, 1.0f);}";
+	"{gl_Position = transform * vec4(position.x, position.y, position.z, 1.0f);}";

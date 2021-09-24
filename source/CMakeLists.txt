@@ -9,7 +9,9 @@ add_executable(Game main.c
 target_link_libraries(Game
 	-lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lSOIL
 		)
+
 target_link_directories(Game 
 	PUBLIC -I/usr/include/GLFW/glfw3.h
+	PUBLIC -I../source/libs/cglm/cglm.h
 		)
 

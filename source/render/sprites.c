@@ -1,23 +1,25 @@
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
+
 #include "sprites.h"
 #include "shader.h"
+#include "../logic/player.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
-#include "../common.h"
 #include "../libs/cglm/cglm.h"
 
 void InitSprites(sprites* inputSprite)
 {
 	
-	float vertices[20]=
+	float vertices[12]=
 	{
 		// Coordinates    Texture Coordinates
-		0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
-		0.5f, -0.5f, 0.0f, 1.0f, -1.0f,
-		-0.5f, -0.5f, 0.0f, -1.0f, -1.0f,
-		-0.5f, 0.5f, 0.0f, -1.0f, 1.0f
+		0.5f, 0.5f, 0.0f, ///1.0f, 1.0f,
+		0.5f, -0.5f, 0.0f, //1.0f, -1.0f,
+		-0.5f, -0.5f, 0.0f, //-1.0f, -1.0f,
+		-0.5f, 0.5f, 0.0f//, -1.0f, 1.0f
 	};
 
 	GLuint indices[6]=
@@ -35,7 +37,7 @@ void InitSprites(sprites* inputSprite)
 	glBindVertexArray(inputSprite->VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, inputSprite->VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*20, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*12, vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, inputSprite->EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*6, indices, GL_STATIC_DRAW);
@@ -94,7 +96,7 @@ void InitSprites(sprites* inputSprite)
 
 }
 
-void DrawSprites(sprites* inputSprite)
+void DrawSprites(sprites* inputSprite, player *inputPlayer )
 {
 	glUseProgram(inputSprite->shaderProgram);
 	
@@ -104,8 +106,9 @@ void DrawSprites(sprites* inputSprite)
 		0,0,1,0,
 		0,0,0,1
 	};
-	vec4 axis = {0,1,0,0};
-	//glm_rotate(transform, 45.0f, axis);
+	vec4 movement = {inputPlayer->x, inputPlayer->y,0,0};
+
+	glm_translate(transform, movement);
 
 	GLint transformLoc = glGetUniformLocation(inputSprite->shaderProgram, "transform");
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (float*)transform);

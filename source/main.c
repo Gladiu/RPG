@@ -1,8 +1,15 @@
 #include "stdio.h"
+#include "stdlib.h"
 
-#include "common.h"
+
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 #include "render/sprites.h"
+#include "logic/player.h"
 
+
+// Defining various callbacks
 
 // Function that gets executed each time there is a keystroke happening
 void KeyCallback( GLFWwindow * window, int key, int scancode, int action, int mods)
@@ -31,6 +38,8 @@ typedef struct Vector2
 	int y;
 }Vector2;
 
+
+
 int main()
 {
 	// Setting main window size
@@ -46,7 +55,7 @@ int main()
 	if (mainWindow == NULL)
 	{
 		fprintf(stderr, "Failed to create GLFWwindow! Aborting. \n");
-		return -1;
+		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(mainWindow);
 	// Setting key callback function
@@ -57,15 +66,19 @@ int main()
 	if (glewInit() != GLEW_OK)
 	{
 		fprintf(stderr, "Failed to initialize glew! Aborting. \n");
-		return -1;
+		exit(EXIT_FAILURE);
 	}
 
 	// During init, enable debug output
 	glEnable              ( GL_DEBUG_OUTPUT );
 	glDebugMessageCallback( MessageCallback, 0 );
 
-	sprites mySprite;
-	sprites *spritePtr = &mySprite;
+	sprites *spritePtr = malloc(sizeof(sprites));
+
+	player *gamer = malloc(sizeof(player));
+
+	gamer->x = 0;
+	gamer->y = 0;
 
 	InitSprites(spritePtr);
 	// Setting main game loop
@@ -75,11 +88,25 @@ int main()
 		// Setting clear color
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Handling input
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_W))
+			gamer->y += 0.1;
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_S))
+			gamer->y -= 0.1;
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_A))
+			gamer->x -= 0.1;
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
+			gamer->x += 0.1;
+
+
 		// All draw calls should be issued here
-		DrawSprites(spritePtr);
+		DrawSprites(spritePtr, gamer);
 
 		glfwSwapBuffers(mainWindow);
 	}
 
 	return 0;
 }
+
+

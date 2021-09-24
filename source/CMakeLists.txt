@@ -7,7 +7,7 @@ add_executable(Game main.c
 		render/sprites.c
 	)
 target_link_libraries(Game
-	-lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lSOIL
+	-lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lSOIL -lm
 		)
 
 target_link_directories(Game 

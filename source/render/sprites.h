@@ -1,5 +1,6 @@
 #pragma once
-#include "../common.h"
+#include <GLFW/glfw3.h>
+#include "../logic/player.h"
 
 typedef struct sprites
 {
@@ -12,4 +13,4 @@ typedef struct sprites
 
 void InitSprites(sprites* inputSprite);
 
-void DrawSprites(sprites* inputSprite);
+void DrawSprites(sprites* inputSprite, player* inputPlayer);

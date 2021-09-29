@@ -1,5 +1,5 @@
 My first OpenGL game.
-It is supposed to be top down 2D rpg game with open world.
+It is supposed to be rpg game with open world.
 
 Compiling
 ```

@@ -1,9 +1,11 @@
+#include "libs/cglm/cam.h"
 #include "stdio.h"
 #include "stdlib.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "libs/cglm/call.h"
 #include "render/tiles.h"
 #include "logic/player.h"
 
@@ -88,6 +90,7 @@ int main()
 	gamer->y = 0;
 
 	InitTiles(spritePtr, map, 4, 4);
+
 	// Setting main game loop
 	while(!glfwWindowShouldClose(mainWindow))
 	{
@@ -98,7 +101,7 @@ int main()
 
 		// Handling input
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_W))
-			gamer->y += 0.1;
+			printf("w");
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_S))
 			gamer->y -= 0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_A))
@@ -106,7 +109,7 @@ int main()
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			gamer->x += 0.1;
 
-
+		//printf("gamer->x = %d gamer->y = %d \n \r", gamer->x, gamer->y);
 		// All draw calls should be issued here
 		DrawTiles(spritePtr);
 

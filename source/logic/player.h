@@ -2,8 +2,8 @@
 
 typedef struct player
 {
-	int x;
-	int y;
+	float x;
+	float y;
 }player;
 
 

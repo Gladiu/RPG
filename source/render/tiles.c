@@ -53,10 +53,6 @@ void InitTiles(tiles* inputTiles, int *map, size_t height, size_t width)
 			}
 		}
 	}
-	for(int i = 0; i < width*height*30; i++)
-	{
-		fprintf(stderr, "vertices[i] = %d \n\r",(int)vertices[i]);
-	}
 
 	// Enabling and binding buffers buffers
 	
@@ -144,20 +140,30 @@ void DrawTiles(tiles* inputTile)
 {
 	glUseProgram(inputTile->shaderProgram);
 	
-	mat4 transform = {
-		1,0,0,0,
-		0,1,0,0,
-		0,0,1,0,
-		0,0,0,1
-	};
+	mat4 model;
+	glm_mat4_identity(model);
+	//vec4 translation0 = {1.0f, 0.0f, 0.0f};
+	GLint modelLoc = glGetUniformLocation(inputTile->shaderProgram, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)GLM_MAT4_IDENTITY);
+
+	mat4 view;
+	glm_mat4_identity(view);
+	vec4 translation = {-2.5f, -2.5f, -10.0f};
+	glm_translate(view, translation);
+	GLint viewLoc = glGetUniformLocation(inputTile->shaderProgram, "view");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)view);
+
+	mat4 projection;
+	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, projection);
+	GLint projectionLoc = glGetUniformLocation(inputTile->shaderProgram, "projection");
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)projection);
 
 
-	GLint transformLoc = glGetUniformLocation(inputTile->shaderProgram, "transform");
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (float*)transform);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, inputTile->tex0);
 	glUniform1i(glGetUniformLocation(inputTile->shaderProgram,"inputTexture0"), 0);
+
 
 	glBindVertexArray(inputTile->VAO);
 	

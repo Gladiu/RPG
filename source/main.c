@@ -1,11 +1,10 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "render/sprites.h"
+#include "render/tiles.h"
 #include "logic/player.h"
 
 
@@ -72,15 +71,23 @@ int main()
 	// During init, enable debug output
 	glEnable              ( GL_DEBUG_OUTPUT );
 	glDebugMessageCallback( MessageCallback, 0 );
+	
+	int map[16]=
+	{
+		1,1,1,1,
+		1,1,1,1,
+		1,1,1,1,
+		1,1,1,1
+	};
 
-	sprites *spritePtr = malloc(sizeof(sprites));
+	tiles *spritePtr = malloc(sizeof(tiles));
 
 	player *gamer = malloc(sizeof(player));
 
 	gamer->x = 0;
 	gamer->y = 0;
 
-	InitSprites(spritePtr);
+	InitTiles(spritePtr, map, 4, 4);
 	// Setting main game loop
 	while(!glfwWindowShouldClose(mainWindow))
 	{
@@ -101,7 +108,7 @@ int main()
 
 
 		// All draw calls should be issued here
-		DrawSprites(spritePtr, gamer);
+		DrawTiles(spritePtr);
 
 		glfwSwapBuffers(mainWindow);
 	}

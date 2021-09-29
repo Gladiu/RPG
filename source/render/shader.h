@@ -1,14 +1,19 @@
 #pragma once
 
-const char *genericFragmentShader =
-	"#version 330 core\n"
-	"out vec4 color;\n"
-	"void main()\n"
-	"{color = vec4(0.5f, 0.5f, 0.5f, 0.5f);}";
-
 const char *genericVertexShader = 
 	"#version 330 core\n"
 	"layout (location = 0) in vec3 position;\n"
+	"layout (location = 1) in vec2 texCoord;\n"
 	"uniform mat4 transform;\n"
+	"out vec2 fromVertexTexCoord;\n"
 	"void main()\n"
-	"{gl_Position = transform * vec4(position.x, position.y, position.z, 1.0f);}";
+	"{fromVertexTexCoord = texCoord;\n"
+	"gl_Position = transform * vec4(position.x, position.y, position.z, 1.0f);}";
+
+const char *genericFragmentShader =
+	"#version 330 core\n"
+	"in vec2 fromVertexTexCoord;\n"
+	"uniform sampler2D inputTexture0;\n"
+	"out vec4 color;\n"
+	"void main()\n"
+	"{color = texture(inputTexture0, fromVertexTexCoord);}";

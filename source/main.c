@@ -88,7 +88,13 @@ int main()
 
 	gamer->x = 0;
 	gamer->y = 0;
-
+	
+	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, spritePtr->projection);
+	glm_mat4_identity(spritePtr->view);
+	vec4 eye = {0.0, 0.0, -5.0};
+	vec4 target = {0.0, 0.0, 0.0};
+	vec4 up = {0.0, 1.0, 0.0};
+	glm_lookat( eye, target, up, spritePtr->view); 
 	InitTiles(spritePtr, map, 4, 4);
 
 	// Setting main game loop
@@ -100,16 +106,19 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Handling input
+		vec4 move = {0.0, 0.0, 0.0, 0.0};
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_W))
-			printf("w");
+			move[1] = move[1]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_S))
-			gamer->y -= 0.1;
+			move[1] = move[1]-0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_A))
-			gamer->x -= 0.1;
+			move[0] = move[0]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
-			gamer->x += 0.1;
-
-		//printf("gamer->x = %d gamer->y = %d \n \r", gamer->x, gamer->y);
+			move[0] = move[0]-0.1;
+		
+		// Debug
+//		printf(stderr, "%d", move[0]
+		glm_translate(spritePtr->view, move);
 		// All draw calls should be issued here
 		DrawTiles(spritePtr);
 

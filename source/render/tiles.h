@@ -1,5 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include "../libs/cglm/cglm.h"
 
 typedef struct tiles
 {
@@ -7,6 +8,8 @@ typedef struct tiles
 	GLuint VBO; // Vertex Buffer Object
 	GLuint tex0; // Texture index
 	GLuint shaderProgram;
+	mat4 projection;
+	mat4 view;
 }tiles;
 
 

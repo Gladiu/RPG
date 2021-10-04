@@ -142,23 +142,15 @@ void DrawTiles(tiles* inputTile)
 	
 	mat4 model;
 	glm_mat4_identity(model);
-	//vec4 translation0 = {1.0f, 0.0f, 0.0f};
 	GLint modelLoc = glGetUniformLocation(inputTile->shaderProgram, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)GLM_MAT4_IDENTITY);
 
-	mat4 view;
-	glm_mat4_identity(view);
-	vec4 translation = {-2.5f, -2.5f, -10.0f};
-	glm_translate(view, translation);
 	GLint viewLoc = glGetUniformLocation(inputTile->shaderProgram, "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)view);
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)inputTile->view);
 
-	mat4 projection;
-	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, projection);
+
 	GLint projectionLoc = glGetUniformLocation(inputTile->shaderProgram, "projection");
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)projection);
-
-
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)inputTile->projection);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, inputTile->tex0);

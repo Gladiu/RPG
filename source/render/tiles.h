@@ -2,6 +2,9 @@
 #include <GLFW/glfw3.h>
 #include "../libs/cglm/cglm.h"
 
+// Tiles are supposed to be unchanged static images 
+// that are viewed at certain angle from camera
+
 typedef struct tiles
 {
 	GLuint VAO; // Vertex Array Object

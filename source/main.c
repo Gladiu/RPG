@@ -7,8 +7,7 @@
 
 #include "libs/cglm/call.h"
 #include "render/tiles.h"
-#include "logic/player.h"
-
+#include "render/sprites.h"
 
 // Defining various callbacks
 
@@ -53,6 +52,11 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow *mainWindow = glfwCreateWindow(windowSize.x, windowSize.y,"Platform v0.01", NULL, NULL );
+	glfwSetWindowAttrib(mainWindow, GLFW_FLOATING, GLFW_TRUE);
+	glfwSetWindowSize(mainWindow, windowSize.x, windowSize.y);
+	glfwRestoreWindow(mainWindow);
+	fprintf(stderr, "Maximised window %d \n", glfwGetWindowAttrib(mainWindow, GLFW_MAXIMIZED));
+
 	if (mainWindow == NULL)
 	{
 		fprintf(stderr, "Failed to create GLFWwindow! Aborting. \n");
@@ -82,27 +86,27 @@ int main()
 		1,1,1,1
 	};
 
-	tiles *spritePtr = malloc(sizeof(tiles));
+	tiles *tilePtr = malloc(sizeof(tiles));
+	sprites *spritePtr = malloc(sizeof(sprites));
 
-	player *gamer = malloc(sizeof(player));
-
-	gamer->x = 0;
-	gamer->y = 0;
 	
+	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, tilePtr->projection);
 	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, spritePtr->projection);
+	glm_mat4_identity(tilePtr->view);
 	glm_mat4_identity(spritePtr->view);
 	vec4 eye = {0.0, 0.0, -5.0};
 	vec4 target = {0.0, 0.0, 0.0};
 	vec4 up = {0.0, 1.0, 0.0};
+	glm_lookat( eye, target, up, tilePtr->view); 
 	glm_lookat( eye, target, up, spritePtr->view); 
-	InitTiles(spritePtr, map, 4, 4);
-
+	InitTiles(tilePtr, map, 4, 4);
+	InitSprites(spritePtr);
 	// Setting main game loop
 	while(!glfwWindowShouldClose(mainWindow))
 	{
 		glfwPollEvents();
 		// Setting clear color
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Handling input
@@ -117,14 +121,16 @@ int main()
 			move[0] = move[0]-0.1;
 		vec4 rotate = {0.0, 0.0, 0.0, 0.0};
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_R))
-			glm_rotate(spritePtr->view, 0.1, (vec4){1.0, 0.0, 0.0});
+			glm_rotate(tilePtr->view, 0.1, (vec4){1.0, 0.0, 0.0});
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_F))
-			glm_rotate(spritePtr->view, -0.1, (vec4){1.0, 0.0, 0.0});
+			glm_rotate(tilePtr->view, -0.1, (vec4){1.0, 0.0, 0.0});
 		// Debug
+		glm_translate(tilePtr->view, move);
 		glm_translate(spritePtr->view, move);
-		// All draw calls should be issued here
-		DrawTiles(spritePtr);
 
+		// All draw calls should be issued here
+		DrawTiles(tilePtr);
+		DrawSprites(spritePtr);
 		glfwSwapBuffers(mainWindow);
 	}
 

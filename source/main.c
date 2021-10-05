@@ -115,9 +115,12 @@ int main()
 			move[0] = move[0]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]-0.1;
-		
+		vec4 rotate = {0.0, 0.0, 0.0, 0.0};
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_R))
+			glm_rotate(spritePtr->view, 0.1, (vec4){1.0, 0.0, 0.0});
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_F))
+			glm_rotate(spritePtr->view, -0.1, (vec4){1.0, 0.0, 0.0});
 		// Debug
-//		printf(stderr, "%d", move[0]
 		glm_translate(spritePtr->view, move);
 		// All draw calls should be issued here
 		DrawTiles(spritePtr);

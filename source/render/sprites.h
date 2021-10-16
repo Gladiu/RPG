@@ -16,7 +16,7 @@ typedef struct sprites
 	GLuint shaderProgram;
 	mat4 projection;
 	mat4 view;
-
+	mat4 model;
 }sprites;
 
 

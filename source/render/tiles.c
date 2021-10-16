@@ -136,10 +136,9 @@ void DrawTiles(tiles* inputTile)
 {
 	glUseProgram(inputTile->shaderProgram);
 	
-	mat4 model;
-	glm_mat4_identity(model);
 	GLint modelLoc = glGetUniformLocation(inputTile->shaderProgram, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)GLM_MAT4_IDENTITY);
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)inputTile->model );
+
 
 	GLint viewLoc = glGetUniformLocation(inputTile->shaderProgram, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)inputTile->view);

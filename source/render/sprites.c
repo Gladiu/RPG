@@ -106,9 +106,8 @@ void DrawSprites(sprites* inputSprite)
 {
 	glUseProgram(inputSprite->shaderProgram);
 	
-	mat4 model;
 	GLint modelLoc = glGetUniformLocation(inputSprite->shaderProgram, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)GLM_MAT4_IDENTITY);
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)inputSprite->model);
 
 	GLint viewLoc = glGetUniformLocation(inputSprite->shaderProgram, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)inputSprite->view);

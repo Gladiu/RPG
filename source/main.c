@@ -89,11 +89,13 @@ int main()
 	tiles *tilePtr = malloc(sizeof(tiles));
 	sprites *spritePtr = malloc(sizeof(sprites));
 
-	
+	// Assiging all of the matrices of sprite and tiles
 	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, tilePtr->projection);
 	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, spritePtr->projection);
 	glm_mat4_identity(tilePtr->view);
 	glm_mat4_identity(spritePtr->view);
+	glm_mat4_identity(tilePtr->model);
+	glm_mat4_identity(spritePtr->model);
 	vec4 eye = {0.0, 0.0, -5.0};
 	vec4 target = {0.0, 0.0, 0.0};
 	vec4 up = {0.0, 1.0, 0.0};
@@ -119,15 +121,10 @@ int main()
 			move[0] = move[0]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]-0.1;
-		vec4 rotate = {0.0, 0.0, 0.0, 0.0};
-		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_R))
-			glm_rotate(tilePtr->view, 0.1, (vec4){1.0, 0.0, 0.0});
-		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_F))
-			glm_rotate(tilePtr->view, -0.1, (vec4){1.0, 0.0, 0.0});
 		// Debug
 		glm_translate(tilePtr->view, move);
 		glm_translate(spritePtr->view, move);
-
+		glm_translate(spritePtr->model, move);
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
 		DrawSprites(spritePtr);

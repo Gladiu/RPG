@@ -88,19 +88,16 @@ int main()
 
 	tiles *tilePtr = malloc(sizeof(tiles));
 	sprites *spritePtr = malloc(sizeof(sprites));
-
+	mat4 generalView;
+	glm_mat4_identity(generalView);
+	glm_translate(generalView, (vec4){0.0f, 0.0f, -5.0f});
 	// Assiging all of the matrices of sprite and tiles
-	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, tilePtr->projection);
-	glm_perspective(75, 4.0f/3.0f, 0.1f, 100.0f, spritePtr->projection);
-	glm_mat4_identity(tilePtr->view);
-	glm_mat4_identity(spritePtr->view);
+	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, spritePtr->projection);
+	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, tilePtr->projection);
+	tilePtr->view = &generalView;
+	spritePtr->view = &generalView;
 	glm_mat4_identity(tilePtr->model);
 	glm_mat4_identity(spritePtr->model);
-	vec4 eye = {0.0, 0.0, -5.0};
-	vec4 target = {0.0, 0.0, 0.0};
-	vec4 up = {0.0, 1.0, 0.0};
-	glm_lookat( eye, target, up, tilePtr->view); 
-	glm_lookat( eye, target, up, spritePtr->view); 
 	InitTiles(tilePtr, map, 4, 4);
 	InitSprites(spritePtr);
 	// Setting main game loop
@@ -110,7 +107,6 @@ int main()
 		// Setting clear color
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
 		// Handling input
 		vec4 move = {0.0, 0.0, 0.0, 0.0};
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_W))
@@ -121,10 +117,7 @@ int main()
 			move[0] = move[0]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]-0.1;
-		// Debug
-		glm_translate(tilePtr->view, move);
-		glm_translate(spritePtr->view, move);
-		glm_translate(spritePtr->model, move);
+		glm_translate(generalView, move);
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
 		DrawSprites(spritePtr);

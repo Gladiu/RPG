@@ -15,7 +15,7 @@ typedef struct sprites
 	GLuint tex0; // Texture index
 	GLuint shaderProgram;
 	mat4 projection;
-	mat4 view;
+	mat4* view;
 	mat4 model;
 }sprites;
 

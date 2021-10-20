@@ -88,16 +88,17 @@ int main()
 
 	tiles *tilePtr = malloc(sizeof(tiles));
 	sprites *spritePtr = malloc(sizeof(sprites));
-	mat4 generalView;
-	glm_mat4_identity(generalView);
-	glm_translate(generalView, (vec4){0.0f, 0.0f, -5.0f});
+	mat4 mainView;
+	glm_mat4_identity(mainView);
+	glm_translate(mainView, (vec4){0.0f, 0.0f, -5.0f});
+	mat4 generalProjection;
+	glm_mat4_identity(generalProjection);
+	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, generalProjection);
 	// Assiging all of the matrices of sprite and tiles
-	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, spritePtr->projection);
-	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, tilePtr->projection);
-	tilePtr->view = &generalView;
-	spritePtr->view = &generalView;
-	glm_mat4_identity(tilePtr->model);
-	glm_mat4_identity(spritePtr->model);
+	tilePtr->projection = &generalProjection;
+	spritePtr->projection = &generalProjection;
+	tilePtr->view = &mainView;
+	spritePtr->view = &mainView;
 	InitTiles(tilePtr, map, 4, 4);
 	InitSprites(spritePtr);
 	// Setting main game loop
@@ -117,7 +118,7 @@ int main()
 			move[0] = move[0]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]-0.1;
-		glm_translate(generalView, move);
+		glm_translate(mainView, move);
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
 		DrawSprites(spritePtr);

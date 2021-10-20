@@ -11,7 +11,7 @@ typedef struct tiles
 	GLuint VBO; // Vertex Buffer Object
 	GLuint tex0; // Texture index
 	GLuint shaderProgram;
-	mat4 projection;
+	mat4* projection;
 	mat4* view;
 	mat4 model;
 }tiles;

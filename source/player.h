@@ -5,8 +5,9 @@
 typedef struct player
 {
 	sprites sprite;
+	mat4 view;
 
 }player;
 
 void InitPlayer(player* inputPlayer);
-
+void DrawPlayer(player* inputPlayer);

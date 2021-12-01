@@ -1,4 +1,5 @@
 #include "libs/cglm/cam.h"
+#include "libs/cglm/mat4.h"
 #include "stdio.h"
 #include "stdlib.h"
 
@@ -8,6 +9,7 @@
 #include "libs/cglm/call.h"
 #include "render/tiles.h"
 #include "render/sprites.h"
+#include "player.h"
 
 // Defining various callbacks
 
@@ -87,20 +89,18 @@ int main()
 	};
 
 	tiles *tilePtr = malloc(sizeof(tiles));
-	sprites *spritePtr = malloc(sizeof(sprites));
-	mat4 mainView;
-	glm_mat4_identity(mainView);
-	glm_translate(mainView, (vec4){0.0f, 0.0f, -5.0f});
+	player *mainPlayer = malloc(sizeof(player));
+	glm_mat4_identity(mainPlayer->view);
+	glm_translate(mainPlayer->view, (vec4){0.0f, 0.0f, -5.0f});
 	mat4 generalProjection;
 	glm_mat4_identity(generalProjection);
 	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, generalProjection);
 	// Assiging all of the matrices of sprite and tiles
 	tilePtr->projection = &generalProjection;
-	spritePtr->projection = &generalProjection;
-	tilePtr->view = &mainView;
-	spritePtr->view = &mainView;
+
+	// Player is holding view matrix and rest is having just a pointer
+	tilePtr->view = &mainPlayer->view;
 	InitTiles(tilePtr, map, 4, 4);
-	InitSprites(spritePtr);
 	// Setting main game loop
 	while(!glfwWindowShouldClose(mainWindow))
 	{
@@ -118,10 +118,10 @@ int main()
 			move[0] = move[0]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]-0.1;
-		glm_translate(mainView, move);
+		glm_translate(mainPlayer->view, move);
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
-		DrawSprites(spritePtr);
+		DrawPlayer(mainPlayer);
 		glfwSwapBuffers(mainWindow);
 	}
 

@@ -12,7 +12,7 @@ OpenGl 3.3
 SOIL
 GLFW3
 
-Im using for math and u might need to install it cglm
+Im using cglm for math and u might need to install it cglm
 cglm https://github.com/recp/cglm 
 
 

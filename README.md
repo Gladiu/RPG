@@ -12,8 +12,8 @@ OpenGl 3.3
 SOIL
 GLFW3
 
-You also need to install cglm
-cglm https://github.com/recp/cglm
+Im using for math and u might need to install it cglm
+cglm https://github.com/recp/cglm 
 
 
 Currently only runs on linux but windows support will be added.

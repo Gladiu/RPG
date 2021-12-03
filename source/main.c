@@ -8,7 +8,7 @@
 
 #include "libs/cglm/call.h"
 #include "render/tiles.h"
-#include "render/sprites.h"
+#include "render/sprite.h"
 #include "player.h"
 
 // Defining various callbacks
@@ -90,17 +90,16 @@ int main()
 
 	tiles *tilePtr = malloc(sizeof(tiles));
 	player *mainPlayer = malloc(sizeof(player));
-	glm_mat4_identity(mainPlayer->view);
-	glm_translate(mainPlayer->view, (vec4){0.0f, 0.0f, -5.0f});
+	
+	// Creating globla projection matrix
 	mat4 generalProjection;
 	glm_mat4_identity(generalProjection);
 	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, generalProjection);
-	// Assiging all of the matrices of sprite and tiles
-	tilePtr->projection = &generalProjection;
 
 	// Player is holding view matrix and rest is having just a pointer
-	tilePtr->view = &mainPlayer->view;
-	InitTiles(tilePtr, map, 4, 4);
+	// If you need to see area where players is just use player view matrix
+	InitPlayer(mainPlayer, &generalProjection);
+	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 4, 4);
 	// Setting main game loop
 	while(!glfwWindowShouldClose(mainWindow))
 	{

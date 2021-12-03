@@ -2,7 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <SOIL/SOIL.h>
 
-#include "sprites.h"
+#include "sprite.h"
 #include "shader.h"
 
 #include <stdio.h>
@@ -11,8 +11,9 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitSprites(sprites* inputSprite)
+void InitSprite(sprite* inputSprite, mat4* projection, mat4* view)
 {
+
 	glm_mat4_identity(inputSprite->model);
 	float vertices[30]=
 	{
@@ -102,7 +103,7 @@ void InitSprites(sprites* inputSprite)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void DrawSprites(sprites* inputSprite)
+void DrawSprite(sprite* inputSprite)
 {
 	glUseProgram(inputSprite->shaderProgram);
 	

@@ -11,8 +11,10 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitTiles(tiles* inputTiles, int *map, size_t height, size_t width)
+void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t height, size_t width)
 {
+	inputTiles->projection = projection;
+	inputTiles->view = view;
 	glm_mat4_identity(inputTiles->model);
 	float tileVertices[30]=
 	{

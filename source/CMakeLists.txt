@@ -5,7 +5,7 @@ add_compile_options(-g)
 
 add_executable(Game main.c
 		render/tiles.c
-		render/sprites.c
+		render/sprite.c
 		player.c
 	)
 target_link_libraries(Game

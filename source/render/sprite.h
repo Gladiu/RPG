@@ -6,7 +6,7 @@
 // they are facing directly camera
 // their position is in same cooridnates as tiles but they are rotated around X axis
 
-typedef struct sprites
+typedef struct sprite
 {
 	float x;
 	float y;
@@ -17,9 +17,9 @@ typedef struct sprites
 	mat4* projection;
 	mat4* view;
 	mat4 model;
-}sprites;
+}sprite;
 
 
-void InitSprites(sprites* inputSprites);
+void InitSprite(sprite* inputSprites, mat4* projection, mat4* view);
 
-void DrawSprites(sprites* inputSprites);
+void DrawSprite(sprite* inputSprites);

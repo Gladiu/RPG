@@ -120,7 +120,7 @@ int main()
 		glm_translate(mainPlayer->view, move);
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
-		DrawPlayer(mainPlayer);
+		DrawPlayer(mainPlayer); // this line crashes renderdoc
 		glfwSwapBuffers(mainWindow);
 	}
 

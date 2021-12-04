@@ -3,3 +3,4 @@ Makefile
 CMakeCache.txt
 Game
 cmake_install.cmake
+vgcore.*

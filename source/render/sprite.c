@@ -14,6 +14,9 @@
 void InitSprite(sprite* inputSprite, mat4* projection, mat4* view)
 {
 
+	inputSprite->projection = projection;
+	inputSprite->view = view;
+
 	glm_mat4_identity(inputSprite->model);
 	float vertices[30]=
 	{

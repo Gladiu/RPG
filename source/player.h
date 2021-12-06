@@ -13,4 +13,4 @@ typedef struct player
 
 void InitPlayer(player* inputPlayer, mat4* projection);
 void DrawPlayer(player* inputPlayer);
-void PhysicsMovePlayer(player* inputPlayer);
+void MoveWithPhysicsPlayer(player* inputPlayer, vec2 movement, float deltaTime);

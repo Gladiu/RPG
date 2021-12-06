@@ -11,6 +11,9 @@
 #include "render/sprite.h"
 #include "player.h"
 
+// Debug includes
+#include <inttypes.h>
+
 // Defining various callbacks
 
 // Function that gets executed each time there is a keystroke happening
@@ -40,7 +43,12 @@ typedef struct Vector2
 	int y;
 }Vector2;
 
-
+// Get time
+double GetTime()
+{
+	// I am extracting values of time with around ms precision, as i dont need much more
+	return (double)(glfwGetTimerValue() & 0x000ffff0000)/10000000.0;
+}
 
 int main()
 {
@@ -100,15 +108,23 @@ int main()
 	// If you need to see area where players is just use player view matrix
 	InitPlayer(mainPlayer, &generalProjection);
 	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 4, 4);
+
+	// Initializing variables to keep track of time
+	double nowTime = 0;
+	double lastTime = 0;
+	double deltaTime = 0;
 	// Setting main game loop
 	while(!glfwWindowShouldClose(mainWindow))
 	{
 		glfwPollEvents();
+		nowTime = GetTime();
+		deltaTime = nowTime-lastTime;
+		lastTime = nowTime;
 		// Setting clear color
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		// Handling input
-		vec4 move = {0.0, 0.0, 0.0, 0.0};
+		vec2 move = {0.0, 0.0};
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_W))
 			move[1] = move[1]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_S))
@@ -117,7 +133,9 @@ int main()
 			move[0] = move[0]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]-0.1;
-		glm_translate(mainPlayer->view, move);
+		
+		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime);
+		fprintf(stderr,"0x%f\n", nowTime);
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
 		DrawPlayer(mainPlayer); // this line crashes renderdoc

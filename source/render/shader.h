@@ -18,4 +18,7 @@ const static char *genericFragmentShader =
 	"uniform sampler2D inputTexture0;\n"
 	"out vec4 color;\n"
 	"void main()\n"
-	"{color = texture(inputTexture0, fromVertexTexCoord);}";
+	"{vec4 tempColor = texture(inputTexture0, fromVertexTexCoord);\n"
+	"if(tempColor.a < 0.1 )\n"
+	"discard;\n"
+	"color = tempColor;}";

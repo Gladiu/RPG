@@ -7,7 +7,6 @@ typedef struct player
 {
 	sprite sprite;
 	polygon collisionShape;
-	mat4* projection;
 	mat4 view;
 }player;
 

@@ -43,11 +43,10 @@ typedef struct Vector2
 	int y;
 }Vector2;
 
-// Get time
+// Get time in seconds with us precision
 double GetTime()
 {
-	// I am extracting values of time with around ms precision, as i dont need much more
-	return (double)(glfwGetTimerValue() & 0x000ffff0000)/10000000.0;
+	return (double)(glfwGetTimerValue())/1000000000.0;
 }
 
 int main()
@@ -126,16 +125,16 @@ int main()
 		// Handling input
 		vec2 move = {0.0, 0.0};
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_W))
-			move[1] = move[1]+0.1;
-		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_S))
 			move[1] = move[1]-0.1;
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_S))
+			move[1] = move[1]+0.1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_A))
-			move[0] = move[0]+0.1;
-		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]-0.1;
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
+			move[0] = move[0]+0.1;
 		
 		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime);
-		fprintf(stderr,"0x%f\n", nowTime);
+
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
 		DrawPlayer(mainPlayer); // this line crashes renderdoc

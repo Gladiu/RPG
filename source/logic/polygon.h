@@ -1,5 +1,5 @@
 #pragma once
-#include "libs/cglm/call.h"
+#include "../libs/cglm/call.h"
 
 // Used for collision check and physics
 // Might later implement other polygons than square

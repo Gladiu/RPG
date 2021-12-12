@@ -9,7 +9,7 @@
 #include "libs/cglm/call.h"
 #include "render/tiles.h"
 #include "render/sprite.h"
-#include "player.h"
+#include "logic/player.h"
 
 // Debug includes
 #include <inttypes.h>

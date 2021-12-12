@@ -6,8 +6,8 @@ add_compile_options(-g)
 add_executable(Game main.c
 		render/tiles.c
 		render/sprite.c
-		player.c
-		polygon.c
+		logic/player.c
+		logic/polygon.c
 	)
 target_link_libraries(Game
 	-lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lSOIL -lm

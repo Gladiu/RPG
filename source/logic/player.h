@@ -1,5 +1,5 @@
 #pragma once
-#include "render/sprite.h"
+#include "../render/sprite.h"
 #include "polygon.h"
 // Explanation of what player is 
 

@@ -10,6 +10,7 @@
 #include "render/tiles.h"
 #include "render/sprite.h"
 #include "logic/player.h"
+#include "logic/collider.h"
 
 // Debug includes
 #include <inttypes.h>
@@ -95,9 +96,10 @@ int main()
 		1,1,1,1
 	};
 
-	tiles *tilePtr = malloc(sizeof(tiles));
-	player *mainPlayer = malloc(sizeof(player));
-	
+	tiles *tilePtr = calloc(1, sizeof(tiles));
+	player *mainPlayer = calloc(1, sizeof(player));
+	collider *testRock = calloc(1, sizeof(collider));
+
 	// Creating globla projection matrix
 	mat4 generalProjection;
 	glm_mat4_identity(generalProjection);
@@ -106,6 +108,7 @@ int main()
 	// Player is holding view matrix and rest is having just a pointer
 	// If you need to see area where players is just use player view matrix
 	InitPlayer(mainPlayer, &generalProjection);
+	InitCollider(testRock, &generalProjection, &mainPlayer->view, "../source/textures/crate.png");
 	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 4, 4, "../source/textures/tile.png");
 
 	// Initializing variables to keep track of time
@@ -138,6 +141,7 @@ int main()
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
 		DrawPlayer(mainPlayer); // this line crashes renderdoc
+		DrawCollider(testRock);
 		glfwSwapBuffers(mainWindow);
 	}
 

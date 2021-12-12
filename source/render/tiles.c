@@ -11,7 +11,7 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t height, size_t width)
+void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t height, size_t width, char texturePath[])
 {
 	inputTiles->projection = projection;
 	inputTiles->view = view;
@@ -118,7 +118,7 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 
 	// Generating Textures
 	int textureWidth, textureHeight;
-	unsigned char *image = SOIL_load_image("../source/textures/tile.png", &textureWidth, &textureHeight, 0, SOIL_LOAD_RGB);
+	unsigned char *image = SOIL_load_image(texturePath, &textureWidth, &textureHeight, 0, SOIL_LOAD_RGB);
 	glGenTextures(1, &inputTiles->tex0);
 	glBindTexture(GL_TEXTURE_2D, inputTiles->tex0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

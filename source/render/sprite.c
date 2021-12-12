@@ -11,7 +11,7 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitSprite(sprite* inputSprite, mat4* projection, mat4* view)
+void InitSprite(sprite* inputSprite, mat4* projection, mat4* view, char texturePath[])
 {
 
 	inputSprite->projection = projection;
@@ -93,7 +93,7 @@ void InitSprite(sprite* inputSprite, mat4* projection, mat4* view)
 
 	// Generating Textures
 	int textureWidth, textureHeight;
-	unsigned char *image = SOIL_load_image("../source/textures/person.png", &textureWidth, &textureHeight, 0, SOIL_LOAD_RGBA);
+	unsigned char *image = SOIL_load_image(texturePath, &textureWidth, &textureHeight, 0, SOIL_LOAD_RGBA);
 	glGenTextures(1, &inputSprite->tex0);
 	glBindTexture(GL_TEXTURE_2D, inputSprite->tex0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

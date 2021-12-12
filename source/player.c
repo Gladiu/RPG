@@ -7,7 +7,7 @@ void InitPlayer(player* inputPlayer, mat4* projection)
 	inputPlayer->collisionShape.position[1] = 0;
 	glm_mat4_identity(inputPlayer->view);
 	glm_translate(inputPlayer->view, (vec4){0.0f, 0.0f, -5.0f});
-	InitSprite(&(inputPlayer->sprite), projection, &inputPlayer->view);
+	InitSprite(&(inputPlayer->sprite), projection, &inputPlayer->view, "../source/textures/person.png");
 
 }
 

@@ -20,6 +20,6 @@ typedef struct sprite
 }sprite;
 
 
-void InitSprite(sprite* inputSprites, mat4* projection, mat4* view);
+void InitSprite(sprite* inputSprites, mat4* projection, mat4* view, char texturePath[]);
 
 void DrawSprite(sprite* inputSprites);

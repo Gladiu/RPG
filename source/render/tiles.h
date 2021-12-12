@@ -17,6 +17,6 @@ typedef struct tiles
 }tiles;
 
 
-void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t height, size_t width);
+void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t height, size_t width, char texturePath[]);
 
 void DrawTiles(tiles* inputTiles);

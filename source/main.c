@@ -106,7 +106,7 @@ int main()
 	// Player is holding view matrix and rest is having just a pointer
 	// If you need to see area where players is just use player view matrix
 	InitPlayer(mainPlayer, &generalProjection);
-	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 4, 4);
+	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 4, 4, "../source/textures/tile.png");
 
 	// Initializing variables to keep track of time
 	double nowTime = 0;

@@ -16,7 +16,8 @@ void InitSprite(sprite* inputSprite, mat4* projection, mat4* view, char textureP
 
 	inputSprite->projection = projection;
 	inputSprite->view = view;
-
+	inputSprite->position[0] = 0;
+	inputSprite->position[1] = 0;
 	glm_mat4_identity(inputSprite->model);
 	float vertices[30]=
 	{
@@ -129,4 +130,13 @@ void DrawSprite(sprite* inputSprite)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindVertexArray(0);
+}
+
+
+void SetPositionSprite(sprite* inputSprite, vec2 desiredPosition){
+	inputSprite->position[0] = desiredPosition[0];
+	inputSprite->position[1] = desiredPosition[1];
+	inputSprite->model[3][0] = inputSprite->position[0];
+	inputSprite->model[3][1] = inputSprite->position[1];
+
 }

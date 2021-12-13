@@ -88,12 +88,13 @@ int main()
 	glEnable              ( GL_DEBUG_OUTPUT );
 	glDebugMessageCallback( MessageCallback, 0 );
 	
-	int map[16]=
+	int map[25]=
 	{
-		1,1,1,1,
-		1,1,1,1,
-		1,1,1,1,
-		1,1,1,1
+		1,1,1,1,1,
+		1,1,1,1,1,
+		1,1,1,1,1,
+		1,1,1,1,1,
+		1,1,1,1,1,
 	};
 
 	tiles *tilePtr = calloc(1, sizeof(tiles));
@@ -109,7 +110,7 @@ int main()
 	// If you need to see area where players is just use player view matrix
 	InitPlayer(mainPlayer, &generalProjection);
 	InitCollider(testRock, &generalProjection, &mainPlayer->view, "../source/textures/crate.png");
-	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 4, 4, "../source/textures/tile.png");
+	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 5, 5, "../source/textures/tile.png");
 
 	// Initializing variables to keep track of time
 	double nowTime = 0;
@@ -142,6 +143,7 @@ int main()
 		DrawTiles(tilePtr);
 		DrawPlayer(mainPlayer); // this line crashes renderdoc
 		DrawCollider(testRock);
+		SetPositionSprite(&testRock->sprite, (vec2){5.0f, 5.0f});
 		glfwSwapBuffers(mainWindow);
 	}
 

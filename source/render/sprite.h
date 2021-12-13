@@ -8,8 +8,7 @@
 
 typedef struct sprite
 {
-	float x;
-	float y;
+	vec2 position;
 	GLuint VAO; // Vertex Array Object
 	GLuint VBO; // Vertex Buffer Object
 	GLuint tex0; // Texture index

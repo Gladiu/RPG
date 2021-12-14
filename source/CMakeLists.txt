@@ -8,7 +8,7 @@ add_executable(Game main.c
 		render/sprite.c
 		logic/player.c
 		logic/polygon.c
-		logic/collider.c
+		logic/shape.c
 	)
 target_link_libraries(Game
 	-lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lSOIL -lm

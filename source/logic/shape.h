@@ -1,5 +1,6 @@
 #pragma once
 #include "../libs/cglm/call.h"
+#include <stdbool.h>
 
 // Used for collision check and physics
 // Might later implement other polygons than square
@@ -29,16 +30,17 @@
 //  .______________________.
 //
 //
-typedef struct polygon
+typedef struct shape
 {
-	vec2 position;
+	float x;
+	float y;
 	float angle; 
 	float width;
 	float height;
-}polygon;
+}shape;
 
-void PhysicsMove(polygon* inputPolygon, vec2 desiredDirection, float deltaTime);
+void Move(shape* inputShape, vec2 desiredDirection);
 
-void PhysicsRotate(polygon* inputPolygon, mat3 desiredOrientation, float deltaTime);
+void Rotate(shape* inputShape, float angle);
 
-bool Collides(polygon* polygon1, polygon polygon2);
+bool Collides(shape* shape1, shape shape2);

@@ -16,8 +16,6 @@ void InitSprite(sprite* inputSprite, mat4* projection, mat4* view, char textureP
 
 	inputSprite->projection = projection;
 	inputSprite->view = view;
-	inputSprite->position[0] = 0;
-	inputSprite->position[1] = 0;
 	glm_mat4_identity(inputSprite->model);
 	float vertices[30]=
 	{
@@ -134,9 +132,11 @@ void DrawSprite(sprite* inputSprite)
 
 
 void SetPositionSprite(sprite* inputSprite, vec2 desiredPosition){
-	inputSprite->position[0] = desiredPosition[0];
-	inputSprite->position[1] = desiredPosition[1];
-	inputSprite->model[3][0] = inputSprite->position[0];
-	inputSprite->model[3][1] = inputSprite->position[1];
+	inputSprite->model[3][0] = desiredPosition[0];
+	inputSprite->model[3][1] = desiredPosition[1];
+}
 
+void MoveSprite(sprite* inputSprite, vec2 movement, float deltaTime){
+	inputSprite->model[3][0] += movement[0] * deltaTime;
+	inputSprite->model[3][1] += movement[1] * deltaTime;
 }

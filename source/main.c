@@ -1,7 +1,8 @@
 #include "libs/cglm/cam.h"
 #include "libs/cglm/mat4.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,7 +11,6 @@
 #include "render/tiles.h"
 #include "render/sprite.h"
 #include "logic/player.h"
-#include "logic/collider.h"
 
 // Debug includes
 #include <inttypes.h>
@@ -99,7 +99,6 @@ int main()
 
 	tiles *tilePtr = calloc(1, sizeof(tiles));
 	player *mainPlayer = calloc(1, sizeof(player));
-	collider *testRock = calloc(1, sizeof(collider));
 
 	// Creating globla projection matrix
 	mat4 generalProjection;
@@ -109,7 +108,6 @@ int main()
 	// Player is holding view matrix and rest is having just a pointer
 	// If you need to see area where players is just use player view matrix
 	InitPlayer(mainPlayer, &generalProjection);
-	InitCollider(testRock, &generalProjection, &mainPlayer->view, "../source/textures/crate.png");
 	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 5, 5, "../source/textures/tile.png");
 
 	// Initializing variables to keep track of time
@@ -129,21 +127,18 @@ int main()
 		// Handling input
 		vec2 move = {0.0, 0.0};
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_W))
-			move[1] = move[1]-0.1;
+			move[1] = move[1]-1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_S))
-			move[1] = move[1]+0.1;
+			move[1] = move[1]+1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_A))
-			move[0] = move[0]-0.1;
+			move[0] = move[0]-1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
-			move[0] = move[0]+0.1;
-		
-		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime);
+			move[0] = move[0]+1;
+		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 6);
 
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
 		DrawPlayer(mainPlayer); // this line crashes renderdoc
-		DrawCollider(testRock);
-		SetPositionSprite(&testRock->sprite, (vec2){5.0f, 5.0f});
 		glfwSwapBuffers(mainWindow);
 	}
 

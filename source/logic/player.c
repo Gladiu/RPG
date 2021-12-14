@@ -1,10 +1,9 @@
 #include "player.h"
-#include <memory.h>
+#include "collider.h"
+#include <math.h>
 
 void InitPlayer(player* inputPlayer, mat4* projection)
 {
-	inputPlayer->collisionShape.position[0] = 0;
-	inputPlayer->collisionShape.position[1] = 0;
 	glm_mat4_identity(inputPlayer->view);
 	glm_translate(inputPlayer->view, (vec4){0.0f, 0.0f, -5.0f});
 	InitSprite(&(inputPlayer->sprite), projection, &inputPlayer->view, "../source/textures/person.png");
@@ -16,13 +15,17 @@ void DrawPlayer(player* inputPlayer)
 	DrawSprite(&(*inputPlayer).sprite);
 }
 
-void MoveWithPhysicsPlayer(player *inputPlayer, vec2 movement, float deltaTime)
+void MoveWithPhysicsPlayer(player *inputPlayer, vec2 movement, float deltaTime, float speedFactor)
 {
-	PhysicsMove(&inputPlayer->collisionShape, movement, deltaTime);
-	// Update model position
-	glm_translate(inputPlayer->sprite.model, (vec4){movement[0], movement[1], 0.0f, 0.0f});
-	// Update view matrix after updating collisionShape
-	// view transform are with -
-	glm_translate(inputPlayer->view,(vec4){-movement[0], -movement[1], 0.0f, 0.0f});
-	
+	// Normalising movement vector 
+	double vectorLength = sqrt(movement[0]*movement[0] +movement[1]*movement[1]);
+	if (vectorLength != 0){
+		movement[0] /= vectorLength;
+		movement[1] /= vectorLength;
+	}
+	movement[0] *= speedFactor;
+	movement[1] *= speedFactor;
+	// Moving hitbox and sprite
+	// Since we are moving player we need to move camera with him
+	MoveSprite(&inputPlayer->sprite, movement, deltaTime);
 }

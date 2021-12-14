@@ -8,7 +8,6 @@
 
 typedef struct sprite
 {
-	vec2 position;
 	GLuint VAO; // Vertex Array Object
 	GLuint VBO; // Vertex Buffer Object
 	GLuint tex0; // Texture index
@@ -24,3 +23,5 @@ void InitSprite(sprite* inputSprite, mat4* projection, mat4* view, char textureP
 void DrawSprite(sprite* inputSprite);
 
 void SetPositionSprite(sprite* inputSprite, vec2 desiredPosition);
+
+void MoveSprite(sprite* inputSprite, vec3 movement, float deltaTime);

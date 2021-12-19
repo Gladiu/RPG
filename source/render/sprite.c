@@ -11,12 +11,12 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitSprite(sprite* inputSprite, mat4* projection, mat4* view, char texturePath[])
+void InitSprite(sprite* inputSprite,mat4* model, mat4* projection, mat4* view, char texturePath[])
 {
 
 	inputSprite->projection = projection;
 	inputSprite->view = view;
-	glm_mat4_identity(inputSprite->model);
+	inputSprite->model = model;
 	float vertices[30]=
 	{
 		// Coordinates       Texture Coordinates
@@ -128,15 +128,4 @@ void DrawSprite(sprite* inputSprite)
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindVertexArray(0);
-}
-
-
-void SetPositionSprite(sprite* inputSprite, vec2 desiredPosition){
-	inputSprite->model[3][0] = desiredPosition[0];
-	inputSprite->model[3][1] = desiredPosition[1];
-}
-
-void MoveSprite(sprite* inputSprite, vec2 movement, float deltaTime){
-	inputSprite->model[3][0] += movement[0] * deltaTime;
-	inputSprite->model[3][1] += movement[1] * deltaTime;
 }

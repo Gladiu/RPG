@@ -106,7 +106,6 @@ int main()
 	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, generalProjection);
 
 	// Player is holding view matrix and rest is having just a pointer
-	// If you need to see area where players is just use player view matrix
 	InitPlayer(mainPlayer, &generalProjection);
 	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 5, 5, "../source/textures/tile.png");
 

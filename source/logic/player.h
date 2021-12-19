@@ -9,6 +9,7 @@ typedef struct player
 	sprite sprite;
 	shape collisionShape;
 	mat4 view;
+	mat4 model;
 }player;
 
 void InitPlayer(player* inputPlayer, mat4* projection);

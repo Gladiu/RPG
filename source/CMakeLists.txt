@@ -7,7 +7,6 @@ add_executable(Game main.c
 		render/tiles.c
 		render/sprite.c
 		logic/player.c
-		logic/polygon.c
 		logic/shape.c
 	)
 target_link_libraries(Game

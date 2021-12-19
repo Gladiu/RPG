@@ -14,14 +14,10 @@ typedef struct sprite
 	GLuint shaderProgram;
 	mat4* projection;
 	mat4* view;
-	mat4 model;
+	mat4* model;
 }sprite;
 
 
-void InitSprite(sprite* inputSprite, mat4* projection, mat4* view, char texturePath[]);
+void InitSprite(sprite* inputSprite, mat4* model, mat4* projection, mat4* view, char texturePath[]);
 
 void DrawSprite(sprite* inputSprite);
-
-void SetPositionSprite(sprite* inputSprite, vec2 desiredPosition);
-
-void MoveSprite(sprite* inputSprite, vec3 movement, float deltaTime);

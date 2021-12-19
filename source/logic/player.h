@@ -10,6 +10,7 @@ typedef struct player
 	shape collisionShape;
 	mat4 view;
 	mat4 model;
+	vec2 velocity;
 }player;
 
 void InitPlayer(player* inputPlayer, mat4* projection);

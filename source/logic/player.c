@@ -30,4 +30,6 @@ void MoveWithPhysicsPlayer(player *inputPlayer, vec2 movement, float deltaTime, 
 	inputPlayer->model[3][1] += movement[1] * deltaTime * speedFactor;
 
 	// Since we are moving our player we need to move camera with him
+	inputPlayer->view[3][0] = -inputPlayer->model[3][0];
+	inputPlayer->view[3][1] = -inputPlayer->model[3][1];
 }

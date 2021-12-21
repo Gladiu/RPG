@@ -1,5 +1,9 @@
-My first OpenGL game.
-It is supposed to be rpg game with open world.
+My first OpenGL game and first big project in C
+
+Required dependency
+OpenGl 3.3
+SOIL
+GLFW3
 
 Compiling
 ```
@@ -7,15 +11,6 @@ cmake -S source/ -B build/
 cd build
 make
 ```
-Required dependency
-OpenGl 3.3
-SOIL
-GLFW3
 
-Im using cglm for math and u might need to install it cglm
-cglm https://github.com/recp/cglm 
-
-
-Currently only runs on linux but windows support will be added.
-
-You are free to do whatever you want with this code.
+Currently only runs on linux but windows should work if you link glfw and soil
+I will do it once this thing will be worth it :D

@@ -20,3 +20,4 @@ void SetPosShape(shape* inputShape, vec2 desiredPosition);
 void SetAngleShape(shape* inputShape, float angle);
 
 bool Collides(shape* shape1, shape shape2);
+

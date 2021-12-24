@@ -1,5 +1,6 @@
 My first OpenGL game and first big project in C
 
+All textures are 16x16
 Required dependency
 OpenGl 3.3
 SOIL

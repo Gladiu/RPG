@@ -121,9 +121,10 @@ int main()
 		deltaTime = nowTime-lastTime;
 		lastTime = nowTime;
 		// Setting clear color
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f); // Gray color
 		glClear(GL_COLOR_BUFFER_BIT);
 		// Handling input
+		// Magic values are temporary for testing
 		vec2 move = {0.0, 0.0};
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_W))
 			move[1] = move[1]-1;
@@ -133,11 +134,11 @@ int main()
 			move[0] = move[0]-1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]+1;
-		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 6);
+		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 6); // Magic value is temporary
 
 		// All draw calls should be issued here
 		DrawTiles(tilePtr);
-		DrawPlayer(mainPlayer); // this line crashes renderdoc
+		DrawPlayer(mainPlayer);
 		glfwSwapBuffers(mainWindow);
 	}
 

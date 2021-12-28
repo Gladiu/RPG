@@ -50,7 +50,6 @@ void InitSprite(sprite* inputSprite,mat4* model, mat4* projection, mat4* view, c
 	GLuint fragment;
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment, 1, &genericFragmentShader, NULL);
-
 	glCompileShader(fragment);
 	glGetShaderiv(fragment, GL_COMPILE_STATUS, &succes);
 	if(!succes)

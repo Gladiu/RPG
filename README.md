@@ -1,6 +1,6 @@
 My first OpenGL game and first big project in C
 
-All textures are 16x16
+All textures are 16x16 and using PICO-8 colour palette
 Required dependency
 OpenGl 3.3
 SOIL

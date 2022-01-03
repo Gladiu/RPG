@@ -142,7 +142,7 @@ int main()
 
 		// All draw calls should be issued here
 		DrawTiles(tilePtr, nowTime, light);
-		DrawPlayer(mainPlayer);
+		DrawPlayer(mainPlayer, nowTime);
 		glfwSwapBuffers(mainWindow);
 	}
 

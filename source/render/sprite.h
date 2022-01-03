@@ -2,9 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "../libs/cglm/cglm.h"
 
-// Sprites are dynamic objects that player can interact with 
-// they are facing directly camera
-// their position is in same cooridnates as tiles but they are rotated around X axis
+// Sprites are dynamic objects 
 
 typedef struct sprite
 {
@@ -15,9 +13,10 @@ typedef struct sprite
 	mat4* projection;
 	mat4* view;
 	mat4* model;
+	unsigned int totalStates;
 }sprite;
 
 
-void InitSprite(sprite* inputSprite, mat4* model, mat4* projection, mat4* view, char texturePath[]);
+void InitSprite(sprite* inputSprite, unsigned int totalStates,mat4* model, mat4* projection, mat4* view, char texturePath[]);
 
-void DrawSprite(sprite* inputSprite);
+void DrawSprite(sprite* inputSprite, unsigned int currentState, unsigned int currentFrame);

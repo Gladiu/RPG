@@ -2,7 +2,11 @@
 #include <stdbool.h>
 #include "../render/sprite.h"
 #include "shape.h"
-// Explanation of what player is 
+
+// Current states that are passed to sprite shader.
+// Their order is bound to what row is the state
+// in sprite sheet
+enum playerStates{south, north, west, east};
 
 typedef struct player
 {
@@ -11,10 +15,14 @@ typedef struct player
 	mat4 view;
 	mat4 model;
 	vec2 velocity;
+	double lastUpdateTime;
+	unsigned int currentFrame;
+	unsigned int totalAnimationFrames;
+	unsigned int currentState;
 }player;
 
 void InitPlayer(player* inputPlayer, mat4* projection);
 
-void DrawPlayer(player* inputPlayer);
+void DrawPlayer(player* inputPlayer, double currentTime);
 
 void MoveWithPhysicsPlayer(player* inputPlayer, vec2 movement, float deltaTime, float speedFactor);

@@ -11,12 +11,15 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitSprite(sprite* inputSprite,mat4* model, mat4* projection, mat4* view, char texturePath[])
+void InitSprite(sprite* inputSprite, unsigned int totalStates,mat4* model, mat4* projection, mat4* view, char texturePath[])
 {
 
 	inputSprite->projection = projection;
 	inputSprite->view = view;
 	inputSprite->model = model;
+
+	inputSprite->totalStates = totalStates;
+
 	float vertices[30]=
 	{
 		// Coordinates       Texture Coordinates
@@ -67,7 +70,7 @@ void InitSprite(sprite* inputSprite,mat4* model, mat4* projection, mat4* view, c
 		exit(EXIT_FAILURE);
 	}
 
-	f = fopen("../source/render/generic.vert", "rb");
+	f = fopen("../source/render/sprite.vert", "rb");
 	fseek(f, 0, SEEK_END);
 	fsize = ftell(f);
 	fseek(f, 0, SEEK_SET);
@@ -123,7 +126,7 @@ void InitSprite(sprite* inputSprite,mat4* model, mat4* projection, mat4* view, c
 	free(genericVertexShader);
 }
 
-void DrawSprite(sprite* inputSprite)
+void DrawSprite(sprite* inputSprite, unsigned int currentState, unsigned int currentFrame)
 {
 	glUseProgram(inputSprite->shaderProgram);
 	
@@ -133,7 +136,6 @@ void DrawSprite(sprite* inputSprite)
 	GLint viewLoc = glGetUniformLocation(inputSprite->shaderProgram, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)inputSprite->view);
 
-
 	GLint projectionLoc = glGetUniformLocation(inputSprite->shaderProgram, "projection");
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)inputSprite->projection);
 
@@ -142,10 +144,16 @@ void DrawSprite(sprite* inputSprite)
 	glUniform1i(glGetUniformLocation(inputSprite->shaderProgram,"inputTexture0"), 0);
 
 	GLint animationFrameLoc = glGetUniformLocation(inputSprite->shaderProgram, "frameNumber");
-	glUniform1f(animationFrameLoc, 0.0f);
+	glUniform1f(animationFrameLoc, (float)currentFrame);
 
 	GLint totalAnimationFramesLoc = glGetUniformLocation(inputSprite->shaderProgram, "totalAnimationFrames");
-	glUniform1f(totalAnimationFramesLoc, 1.0f);
+	glUniform1f(totalAnimationFramesLoc, 8.0f); // TODO change to be variable
+
+	GLint stateNumberLoc = glGetUniformLocation(inputSprite->shaderProgram, "stateNumber");
+	glUniform1f(stateNumberLoc, (float)currentState);
+
+	GLint totalStatesLoc = glGetUniformLocation(inputSprite->shaderProgram, "totalStates");
+	glUniform1f(totalStatesLoc, (float)inputSprite->totalStates);
 
 	glBindVertexArray(inputSprite->VAO);
 	

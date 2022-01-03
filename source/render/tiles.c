@@ -3,7 +3,6 @@
 #include <SOIL/SOIL.h>
 
 #include "tiles.h"
-#include "shader.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +12,13 @@
 
 void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t height, size_t width, char texturePath[])
 {
+	// TODO its Debug only
+	// Setting animation proprieties
+	inputTiles->currentFrame = 0;
+	inputTiles->totalAnimationFrames = 2;
+
+	inputTiles->lastUpdateTime = 0.0f;
+
 	inputTiles->projection = projection;
 	inputTiles->view = view;
 	glm_mat4_identity(inputTiles->model);
@@ -71,11 +77,19 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 	glEnableVertexAttribArray(1);
 	// Creating Shaders
 
+	FILE *f = fopen("../source/render/generic.frag", "rb");
+	fseek(f, 0, SEEK_END);
+	long fsize = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	char *genericFragmentShader = calloc(1, fsize + 1);
+	fread(genericFragmentShader , fsize, 1, f);
+	fclose(f);
+
 	GLint succes;
 	GLchar infoLog[512];
 	GLuint fragment;
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment, 1, &genericFragmentShader, NULL);
+	glShaderSource(fragment, 1, (const GLchar**)&genericFragmentShader, NULL);
 
 	glCompileShader(fragment);
 	glGetShaderiv(fragment, GL_COMPILE_STATUS, &succes);
@@ -86,9 +100,17 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 		exit(EXIT_FAILURE);
 	}
 
+	f = fopen("../source/render/generic.vert", "rb");
+	fseek(f, 0, SEEK_END);
+	fsize = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	char *genericVertexShader = calloc(1, fsize + 1);
+	fread(genericVertexShader , fsize, 1, f);
+	fclose(f);
+
 	GLuint vertex;
 	vertex = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex, 1, &genericVertexShader, NULL);
+	glShaderSource(vertex, 1, (const GLchar**)&genericVertexShader, NULL);
 	glCompileShader(vertex);
 	glGetShaderiv(vertex, GL_COMPILE_STATUS, &succes);
 	if(!succes)
@@ -130,21 +152,27 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 	SOIL_free_image_data(image);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-
+	free(genericVertexShader);
+	free(genericFragmentShader);
 	free(vertices);
 }
 
-void DrawTiles(tiles* inputTile)
+void DrawTiles(tiles* inputTile, double currentTime, point_light* inputLight)
 {
+
 	glUseProgram(inputTile->shaderProgram);
+
+	GLint lightPosLoc = glGetUniformLocation(inputTile->shaderProgram, "lightPos");
+	glUniformMatrix4fv(lightPosLoc, 1, GL_FALSE, (float*)inputLight->position);
+
+	GLint lightStrengthLoc = glGetUniformLocation(inputTile->shaderProgram, "lightStrength");
+	glUniform1f(lightStrengthLoc, inputLight->strength);
 	
 	GLint modelLoc = glGetUniformLocation(inputTile->shaderProgram, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)inputTile->model );
 
-
 	GLint viewLoc = glGetUniformLocation(inputTile->shaderProgram, "view");
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)inputTile->view);
-
 
 	GLint projectionLoc = glGetUniformLocation(inputTile->shaderProgram, "projection");
 	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)inputTile->projection);
@@ -153,10 +181,18 @@ void DrawTiles(tiles* inputTile)
 	glBindTexture(GL_TEXTURE_2D, inputTile->tex0);
 	glUniform1i(glGetUniformLocation(inputTile->shaderProgram,"inputTexture0"), 0);
 
+	GLint animationFrameLoc = glGetUniformLocation(inputTile->shaderProgram, "frameNumber");
+	glUniform1f(animationFrameLoc, inputTile->currentFrame);
 
-	glBindVertexArray(inputTile->VAO);
+	GLint totalAnimationFramesLoc = glGetUniformLocation(inputTile->shaderProgram, "totalAnimationFrames");
+	glUniform1f(totalAnimationFramesLoc, inputTile->totalAnimationFrames);
 	
+	glBindVertexArray(inputTile->VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6*25);
-
 	glBindVertexArray(0);
+
+	if (currentTime - inputTile->lastUpdateTime > 0.50f){
+		inputTile->lastUpdateTime = currentTime;
+		inputTile->currentFrame  = inputTile->currentFrame+1 >= inputTile->totalAnimationFrames ? 0 : inputTile->currentFrame + 1;
+	}
 }

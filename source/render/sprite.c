@@ -3,7 +3,7 @@
 #include <SOIL/SOIL.h>
 
 #include "sprite.h"
-#include "shader.h"
+//#include "shader.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,12 +44,20 @@ void InitSprite(sprite* inputSprite,mat4* model, mat4* projection, mat4* view, c
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,5 * sizeof(float), (GLvoid*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
 	// Creating Shaders
+	
+	FILE *f = fopen("../source/render/generic.frag", "rb");
+	fseek(f, 0, SEEK_END);
+	long fsize = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	char *genericFragmentShader = calloc(1, fsize + 1);
+	fread(genericFragmentShader , fsize, 1, f);
+	fclose(f);
 
 	GLint succes;
 	GLchar infoLog[512];
 	GLuint fragment;
 	fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment, 1, &genericFragmentShader, NULL);
+	glShaderSource(fragment, 1, (const GLchar**)&genericFragmentShader, NULL);
 	glCompileShader(fragment);
 	glGetShaderiv(fragment, GL_COMPILE_STATUS, &succes);
 	if(!succes)
@@ -59,9 +67,17 @@ void InitSprite(sprite* inputSprite,mat4* model, mat4* projection, mat4* view, c
 		exit(EXIT_FAILURE);
 	}
 
+	f = fopen("../source/render/generic.vert", "rb");
+	fseek(f, 0, SEEK_END);
+	fsize = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	char *genericVertexShader = calloc(1, fsize + 1);
+	fread(genericVertexShader , fsize, 1, f);
+	fclose(f);
+
 	GLuint vertex;
 	vertex = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex, 1, &genericVertexShader, NULL);
+	glShaderSource(vertex, 1, (const GLchar**)&genericVertexShader, NULL);
 	glCompileShader(vertex);
 	glGetShaderiv(vertex, GL_COMPILE_STATUS, &succes);
 	if(!succes)
@@ -102,6 +118,9 @@ void InitSprite(sprite* inputSprite,mat4* model, mat4* projection, mat4* view, c
 	glGenerateMipmap(GL_TEXTURE_2D);
 	SOIL_free_image_data(image);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	free(genericFragmentShader);
+	free(genericVertexShader);
 }
 
 void DrawSprite(sprite* inputSprite)
@@ -121,6 +140,12 @@ void DrawSprite(sprite* inputSprite)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, inputSprite->tex0);
 	glUniform1i(glGetUniformLocation(inputSprite->shaderProgram,"inputTexture0"), 0);
+
+	GLint animationFrameLoc = glGetUniformLocation(inputSprite->shaderProgram, "frameNumber");
+	glUniform1f(animationFrameLoc, 0.0f);
+
+	GLint totalAnimationFramesLoc = glGetUniformLocation(inputSprite->shaderProgram, "totalAnimationFrames");
+	glUniform1f(totalAnimationFramesLoc, 1.0f);
 
 	glBindVertexArray(inputSprite->VAO);
 	

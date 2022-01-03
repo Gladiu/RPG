@@ -9,6 +9,7 @@
 
 #include "libs/cglm/call.h"
 #include "render/tiles.h"
+#include "render/point_light.h"
 #include "render/sprite.h"
 #include "logic/player.h"
 
@@ -99,6 +100,9 @@ int main()
 
 	tiles *tilePtr = calloc(1, sizeof(tiles));
 	player *mainPlayer = calloc(1, sizeof(player));
+	point_light *light = calloc(1, sizeof(point_light));
+
+	// Initializing light DEBUG
 
 	// Creating globla projection matrix
 	mat4 generalProjection;
@@ -137,7 +141,7 @@ int main()
 		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 6); // Magic value is temporary
 
 		// All draw calls should be issued here
-		DrawTiles(tilePtr);
+		DrawTiles(tilePtr, nowTime, light);
 		DrawPlayer(mainPlayer);
 		glfwSwapBuffers(mainWindow);
 	}

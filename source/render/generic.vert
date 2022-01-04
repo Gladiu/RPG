@@ -5,11 +5,9 @@ layout (location = 1) in vec2 texCoord;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform float frameNumber;
-uniform float totalAnimationFrames;
 out vec2 fromVertexTexCoord;
 
 void main(){
-	fromVertexTexCoord = vec2(frameNumber/totalAnimationFrames + texCoord.x/totalAnimationFrames, texCoord.y);
+	fromVertexTexCoord = vec2(texCoord.x, texCoord.y);
 	gl_Position = projection * view * model * vec4(position.x, position.y, position.z, 1.0f);
 }

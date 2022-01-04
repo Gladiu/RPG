@@ -48,7 +48,7 @@ void InitSprite(sprite* inputSprite, unsigned int totalStates,mat4* model, mat4*
 	glEnableVertexAttribArray(1);
 	// Creating Shaders
 	
-	FILE *f = fopen("../source/render/generic.frag", "rb");
+	FILE *f = fopen("../source/render/sprite.frag", "rb");
 	fseek(f, 0, SEEK_END);
 	long fsize = ftell(f);
 	fseek(f, 0, SEEK_SET);

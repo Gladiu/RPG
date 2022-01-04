@@ -21,35 +21,37 @@ void DrawPlayer(player* inputPlayer, double currentTime)
 	unsigned int newPlayerState;
 	// It is by design that north and south
 	// orientations are taking priority
-	if (inputPlayer->velocity[0] > 0){
-		newPlayerState = east;
-	}
-	else if (inputPlayer->velocity[0] < 0){
-		newPlayerState = west;
-	}
-	if (inputPlayer->velocity[1] > 0){
-		newPlayerState = north;
-	}
-	else if (inputPlayer->velocity[1] < 0){
-		newPlayerState = south;
+	if (sqrt(inputPlayer->velocity[0]*inputPlayer->velocity[0] + inputPlayer->velocity[1]*inputPlayer->velocity[1]) != 0){
+		if (inputPlayer->velocity[0] > 0){
+			newPlayerState = east;
+		}
+		else if (inputPlayer->velocity[0] < 0){
+			newPlayerState = west;
+		}
+		if (inputPlayer->velocity[1] > 0){
+			newPlayerState = south;
+		}
+		else if (inputPlayer->velocity[1] < 0){
+			newPlayerState = north;
+		}
+
+		if (newPlayerState != inputPlayer->currentState){
+			inputPlayer->currentFrame = 0;
+			inputPlayer->currentState = newPlayerState;
+
+			// To prevent changing frame if it was avalible
+			inputPlayer->lastUpdateTime = currentTime;
+		}
 	}
 	
-
-	if (newPlayerState != inputPlayer->currentState){
-		//inputPlayer->currentFrame = 0;
-		inputPlayer->currentState = newPlayerState;
-
-		// To prevent changing frame if it was avalible
-		//inputPlayer->lastUpdateTime = currentTime;
-	}
 	DrawSprite(&(*inputPlayer).sprite, inputPlayer->currentState, inputPlayer->currentFrame);
 	
-	if (currentTime - inputPlayer->lastUpdateTime > 0.25f){
+	if (currentTime - inputPlayer->lastUpdateTime > 0.05f){
 		inputPlayer->lastUpdateTime = currentTime;
 		inputPlayer->currentFrame  = inputPlayer->currentFrame+1 >= inputPlayer->totalAnimationFrames ? 0 : inputPlayer->currentFrame + 1;
 	}
 
-	if (inputPlayer->velocity[0] == 0 && inputPlayer->velocity[1]){
+	if (inputPlayer->velocity[0] == 0 && inputPlayer->velocity[1] == 0){
 		inputPlayer->currentFrame = 0;
 	}
 }

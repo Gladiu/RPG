@@ -15,7 +15,7 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 	// TODO its Debug only
 	// Setting animation proprieties
 	inputTiles->currentFrame = 0;
-	inputTiles->totalAnimationFrames = 2;
+	inputTiles->totalAnimationFrames = 1;
 
 	inputTiles->lastUpdateTime = 0.0f;
 
@@ -163,7 +163,9 @@ void DrawTiles(tiles* inputTile, double currentTime, point_light* inputLight)
 	glUseProgram(inputTile->shaderProgram);
 
 	GLint lightPosLoc = glGetUniformLocation(inputTile->shaderProgram, "lightPos");
-	glUniformMatrix4fv(lightPosLoc, 1, GL_FALSE, (float*)inputLight->position);
+	glUniform3f(lightPosLoc, inputLight->position[0], inputLight->position[1], inputLight->position[2]);
+	fprintf(stderr, "x = %f y = %f z = %f\n", inputLight->position[0], inputLight->position[1],
+			inputLight->position[2]);
 
 	GLint lightStrengthLoc = glGetUniformLocation(inputTile->shaderProgram, "lightStrength");
 	glUniform1f(lightStrengthLoc, inputLight->strength);

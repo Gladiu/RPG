@@ -103,6 +103,7 @@ int main()
 	point_light *light = calloc(1, sizeof(point_light));
 
 	// Initializing light DEBUG
+	light->strength = 3.0f;
 
 	// Creating globla projection matrix
 	mat4 generalProjection;
@@ -139,10 +140,15 @@ int main()
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]+1;
 		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 6); // Magic value is temporary
-
+		
+		light->position[0] = mainPlayer->model[3][0];
+		light->position[1] = mainPlayer->model[3][1];
+		light->position[2] = mainPlayer->model[3][2];
+		
 		// All draw calls should be issued here
 		DrawTiles(tilePtr, nowTime, light);
 		DrawPlayer(mainPlayer, nowTime);
+
 		glfwSwapBuffers(mainWindow);
 	}
 

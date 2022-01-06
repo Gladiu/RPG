@@ -11,7 +11,12 @@ out vec4 color;
 void main(){
 	vec4 defaultColor = texture(inputTexture0, fromVertexTexCoord);
 	vec3 pixelPos = vec3(fromVertexPos.x, fromVertexPos.y, fromVertexPos.z);
-	if (distance(lightPos, pixelPos) < 0.5*lightStrength){
+	ivec3 intPixelPos = ivec3(round(fromVertexPos.x), round(fromVertexPos.y), round(fromVertexPos.z));
+	vec3 temp = pixelPos-intPixelPos;
+	temp *= 16;
+	temp = round(temp); // TODO Declare own round
+	temp /= 16;
+	if (distance(lightPos, temp+intPixelPos) < 0.5*lightStrength){
 		defaultColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	if (defaultColor.a < 0.1 ){

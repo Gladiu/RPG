@@ -164,8 +164,6 @@ void DrawTiles(tiles* inputTile, double currentTime, point_light* inputLight)
 
 	GLint lightPosLoc = glGetUniformLocation(inputTile->shaderProgram, "lightPos");
 	glUniform3f(lightPosLoc, inputLight->position[0], inputLight->position[1], inputLight->position[2]);
-	fprintf(stderr, "x = %f y = %f z = %f\n", inputLight->position[0], inputLight->position[1],
-			inputLight->position[2]);
 
 	GLint lightStrengthLoc = glGetUniformLocation(inputTile->shaderProgram, "lightStrength");
 	glUniform1f(lightStrengthLoc, inputLight->strength);

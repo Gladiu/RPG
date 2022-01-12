@@ -10,7 +10,7 @@ out vec4 fromVertexPos;
 
 void main(){
 	fromVertexTexCoord = texCoord;
-	fromVertexPos = vec4(position.x, position.y, position.z, 1.0f);
+	fromVertexPos = model * vec4(position.x, position.y, position.z, 1.0f);
 
 	gl_Position = projection * view * model * vec4(position.x, position.y, position.z, 1.0f);
 }

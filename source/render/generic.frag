@@ -10,11 +10,15 @@ out vec4 color;
 
 void main(){
 	vec4 defaultColor = texture(inputTexture0, fromVertexTexCoord);
+	// Get texel pos from UV map
+	// map texel position to world space
+	// add texel pos to integer value of position
+	// to get texel pos in world space
 	vec3 pixelPos = vec3(fromVertexPos.x, fromVertexPos.y, fromVertexPos.z);
-	ivec3 intPixelPos = ivec3(round(fromVertexPos.x), round(fromVertexPos.y), round(fromVertexPos.z));
+	ivec3 intPixelPos = ivec3(floor(fromVertexPos.x), floor(fromVertexPos.y), floor(fromVertexPos.z));
 	vec3 temp = pixelPos-intPixelPos;
 	temp *= 16;
-	temp = round(temp); // TODO Declare own round
+	temp = floor(temp); // TODO Declare own round
 	temp /= 16;
 	if (distance(lightPos, temp+intPixelPos) < 0.5*lightStrength){
 		defaultColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);

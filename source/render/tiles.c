@@ -22,20 +22,20 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 	inputTiles->projection = projection;
 	inputTiles->view = view;
 	glm_mat4_identity(inputTiles->model);
-	float tileVertices[30]=
+	float tileVertices[48]=
 	{
-		// Coordinates       Texture Coordinates
-		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+		// Coordinates    UV          Normal
+		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 	};
 	
 	// Creating mesh based on map input to draw entire tilemap at once
 	// if it creates a lot of troubles can later divide it into smaller meshes
-	float *vertices = malloc(30*(width)*(height)*sizeof(float));
+	float *vertices = malloc(48*(width)*(height)*sizeof(float));
 	for(int y = 0; y < height; y++)
 	{
 		for(int x = 0; x < width; x++)
@@ -45,15 +45,15 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 			{
 				for(int i = 0; i < 6; i++)
 				{	
-					for(int j = 0; j < 5; j++)
+					for(int j = 0; j < 8; j++)
 					{
-						int vertexIndex = i*5+j;
+						int vertexIndex = i*8+j;
 						if(j == 0)
-							vertices[tileIndex*30+vertexIndex] = (tileVertices[vertexIndex] + (float)x);
+							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex] + (float)x);
 						if(j == 1)
-							vertices[tileIndex*30+vertexIndex] = (tileVertices[vertexIndex] + (float)y);
+							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex] + (float)y);
 						if(j > 1) 
-							vertices[tileIndex*30+vertexIndex] = (tileVertices[vertexIndex]);
+							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex]);
 
 					}
 				}
@@ -69,12 +69,14 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 	glBindVertexArray(inputTiles->VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, inputTiles->VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*30*width*height, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*48*width*height, vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)(0));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(0));
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,5 * sizeof(float), (GLvoid*)(3*sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(5*sizeof(float)));
+	glEnableVertexAttribArray(2);
 	// Creating Shaders
 
 	FILE *f = fopen("../source/render/generic.frag", "rb");

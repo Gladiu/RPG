@@ -139,7 +139,7 @@ int main()
 			move[0] = move[0]-1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]+1;
-		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 6); // Magic value is temporary
+		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 1); // Magic value is temporary
 		
 		light->position[0] = mainPlayer->model[3][0];
 		light->position[1] = mainPlayer->model[3][1];

@@ -25,7 +25,7 @@ void SetAngleShape(shape *inputShape, float angle){
 		glm_vec2_rotate(inputShape->pointsArray[i], glm_rad(angle), inputShape->pointsArray[i]);
 	}
 }
-bool  Collides(shape *shape1, shape shape2){
+bool Collides(shape *shape1, shape shape2){
 	// TODO
 	return true;
 }

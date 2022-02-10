@@ -1,4 +1,5 @@
 #include "player.h"
+#include "shape.h"
 #include <math.h>
 
 void InitPlayer(player* inputPlayer, mat4* projection)
@@ -13,6 +14,21 @@ void InitPlayer(player* inputPlayer, mat4* projection)
 	glm_translate(inputPlayer->view, (vec4){0.0f, 0.0f, -5.0f});
 	// 4 is number of state for each direction player can be facing
 	InitSprite(&(inputPlayer->sprite),4 ,&inputPlayer->model, projection, &inputPlayer->view, "../source/textures/character.png");
+	vec2 playerPos; 
+	playerPos[0] = inputPlayer->model[3][0];
+	playerPos[1] = inputPlayer->model[3][1];
+	
+	// Vec2 is alias for array of floats, thats why we can 
+	// decalre this array this way
+	// Hitbox of player is a square
+	vec2 collisionPoints[7]= {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f
+	};
+
+	InitShape(inputPlayer->collisionShape, playerPos, 0, 4,collisionPoints);
 
 }
 

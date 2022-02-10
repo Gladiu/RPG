@@ -12,6 +12,7 @@
 #include "render/point_light.h"
 #include "render/sprite.h"
 #include "logic/player.h"
+#include "logic/destructible.h"
 
 // Debug includes
 #include <inttypes.h>
@@ -101,6 +102,7 @@ int main()
 	tiles *tilePtr = calloc(1, sizeof(tiles));
 	player *mainPlayer = calloc(1, sizeof(player));
 	point_light *light = calloc(1, sizeof(point_light));
+	destructible *crate = calloc(1, sizeof(destructible));
 
 	// Initializing light DEBUG
 	light->strength = 3.0f;
@@ -113,6 +115,7 @@ int main()
 	// Player is holding view matrix and rest is having just a pointer
 	InitPlayer(mainPlayer, &generalProjection);
 	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 5, 5, "../source/textures/tile.png");
+	InitDestructible(crate, &generalProjection, &mainPlayer->view);
 
 	// Initializing variables to keep track of time
 	double nowTime = 0;
@@ -141,6 +144,7 @@ int main()
 			move[0] = move[0]+1;
 		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 1); // Magic value is temporary
 		
+		// Debug moving light along with the player
 		light->position[0] = mainPlayer->model[3][0];
 		light->position[1] = mainPlayer->model[3][1];
 		light->position[2] = mainPlayer->model[3][2];
@@ -148,7 +152,7 @@ int main()
 		// All draw calls should be issued here
 		DrawTiles(tilePtr, nowTime, light);
 		DrawPlayer(mainPlayer, nowTime);
-
+		DrawDestructible(crate, nowTime);
 		glfwSwapBuffers(mainWindow);
 	}
 

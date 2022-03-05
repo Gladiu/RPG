@@ -18,7 +18,7 @@ typedef struct shape
 	line *sides;
 }shape;
 
-void InitShape(shape* inputShape, vec2 position, float angle, int sidesCount, line* sides[3]);
+void InitShape(shape* inputShape, vec2 position, float angle, int sidesCount, line sides[sidesCount]);
 
 void SetPosShape(shape* inputShape, vec2 desiredPosition);
 

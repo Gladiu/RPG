@@ -17,18 +17,12 @@ void InitPlayer(player* inputPlayer, mat4* projection)
 	vec2 playerPos; 
 	playerPos[0] = inputPlayer->model[3][0];
 	playerPos[1] = inputPlayer->model[3][1];
-	
-	// Vec2 is alias for array of floats, thats why we can 
-	// decalre this array this way
-	// Hitbox of player is a square
-	vec2 collisionPoints[7]= {
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		0.0f, 1.0f,
-		1.0f, 1.0f
-	};
+	line lines[4] = {0.0f, 0.0f, 0.0f, 1.0f,
+			 0.0f, 1.0f, 1.0f, 1.0f,
+			 1.0f, 1.0f, 1.0f, 0.0f,
+			 1.0f, 0.0f, 0.0f, 0.0f};
 
-	InitShape(inputPlayer->collisionShape, playerPos, 0, 4,collisionPoints);
+	InitShape(&inputPlayer->collisionShape, playerPos, 0, 4, lines);
 
 }
 

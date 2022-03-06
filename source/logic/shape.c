@@ -2,7 +2,7 @@
 //#include "../libs/cglm/vec2.h"
 #include <math.h>
 
-static float dot(vec2 a, vec2 b) {
+float dot(vec2 a, vec2 b) {
   return a[0] * b[0] + a[1] * b[1];
 }
 void InitShape(shape* inputShape, vec2 position, float angle, int sidesCount, line sides[sidesCount]){
@@ -40,14 +40,15 @@ bool Collides(shape *shape1, shape* shape2){
 		// to use it as an axe
 		vec2 p1 = {0.0f, 0.0f};
 		vec2 p2 = {0.0f, 0.0f};
-		p1[0] = shape1->sides[i].start[0];
-		p1[1] = shape1->sides[i].start[1];
-		p2[0] = shape1->sides[i].end[0];
-		p2[1] = shape1->sides[i].end[1];
-		vec2 edge = {p1[0]-p2[0], p1[1]-p1[1]};
+
+		p1[0] = shape1->sides[i].start[0] + shape1->position[0];
+		p1[1] = shape1->sides[i].start[1] + shape1->position[1];
+		p2[0] = shape1->sides[i].end[0] + shape1->position[0];
+		p2[1] = shape1->sides[i].end[1] + shape1->position[1];
+		vec2 edge = {p1[0]-p2[0], p1[1]-p2[1]};
 		vec2 axis = {-edge[1], edge[0]};
 		
-		// Projecting shape on axe
+		// Projecting shape on axis
 		typedef struct projection{
 			double min;
 			double max;
@@ -57,7 +58,8 @@ bool Collides(shape *shape1, shape* shape2){
 		projectedShape1.min = dot(axis, shape1->sides[0].start);
 		projectedShape1.max = projectedShape1.min;
 		for (int i = 1; i < shape1->sidesCount; i++){
-			double point = dot(axis, shape1->sides[0].start);
+			double point = dot(axis,(vec2){shape1->sides[i].start[0] + shape1->position[0],
+					shape1->sides[i].start[1] + shape1->position[1]} );
 			if ( point < projectedShape1.min){
 				projectedShape1.min = point;
 			}
@@ -68,8 +70,9 @@ bool Collides(shape *shape1, shape* shape2){
 		projection projectedShape2;
 		projectedShape2.min = dot(axis, shape1->sides[0].start);
 		projectedShape2.max = projectedShape2.min;
-		for (int i = 1; i < shape1->sidesCount; i++){
-			double point = dot(axis, shape1->sides[0].start);
+		for (int i = 1; i < shape2->sidesCount; i++){
+			double point = dot(axis,(vec2){shape2->sides[i].start[0] + shape2->position[0],
+					shape2->sides[i].start[1] + shape2->position[1]} );
 			if ( point < projectedShape2.min){
 				projectedShape2.min = point;
 			}
@@ -77,8 +80,14 @@ bool Collides(shape *shape1, shape* shape2){
 				projectedShape2.max = point;
 			}
 		}
-		bool contains = (projectedShape1.min > projectedShape2.min && projectedShape1.min < projectedShape2.max)
-			|| (projectedShape1.max > projectedShape2.min && projectedShape1.max < projectedShape2.max  );
+		fprintf(stderr, "i = %d\n", i);
+		fprintf(stderr, "projectedShape1.min =  %f projectedShape1.max = %f\n", projectedShape1.min, projectedShape1.max);
+		fprintf(stderr, "projectedShape2.min =  %f projectedShape2.max = %f\n", projectedShape2.min, projectedShape2.max);
+		bool contains = ((projectedShape1.min > projectedShape2.min && projectedShape1.min < projectedShape2.max)
+			|| (projectedShape1.max > projectedShape2.min && projectedShape1.max < projectedShape2.max  ))
+			||
+			   ((projectedShape2.min > projectedShape1.min && projectedShape2.min < projectedShape1.max)
+			|| (projectedShape2.max > projectedShape1.min && projectedShape2.max < projectedShape1.max ));
 		if (!contains){
 			return false;
 		}
@@ -89,14 +98,14 @@ bool Collides(shape *shape1, shape* shape2){
 		// to use it as an axe
 		vec2 p1 = {0.0f, 0.0f};
 		vec2 p2 = {0.0f, 0.0f};
-		p1[0] = shape2->sides[i].start[0];
-		p1[1] = shape2->sides[i].start[1];
-		p2[0] = shape2->sides[i].end[0];
-		p2[1] = shape2->sides[i].end[1];
-		vec2 edge = {p1[0]-p2[0], p1[1]-p1[1]};
+		p1[0] = shape2->sides[i].start[0] + shape2->position[0];
+		p1[1] = shape2->sides[i].start[1] + shape2->position[1];
+		p2[0] = shape2->sides[i].end[0] + shape2->position[0];
+		p2[1] = shape2->sides[i].end[1] + shape2->position[1];
+		vec2 edge = {p1[0]-p2[0], p1[1]-p2[1]};
 		vec2 axis = {-edge[1], edge[0]};
 		
-		// Projecting shape on axe
+		// Projecting shape on axis
 		typedef struct projection{
 			double min;
 			double max;
@@ -105,8 +114,9 @@ bool Collides(shape *shape1, shape* shape2){
 		projection projectedShape1;
 		projectedShape1.min = dot(axis, shape2->sides[0].start);
 		projectedShape1.max = projectedShape1.min;
-		for (int i = 1; i < shape2->sidesCount; i++){
-			double point = dot(axis, shape2->sides[0].start);
+		for (int i = 1; i < shape1->sidesCount; i++){
+			double point = dot(axis,(vec2){shape1->sides[i].start[0] + shape1->position[0],
+					shape1->sides[i].start[1] + shape1->position[1]} );
 			if ( point < projectedShape1.min){
 				projectedShape1.min = point;
 			}
@@ -118,7 +128,8 @@ bool Collides(shape *shape1, shape* shape2){
 		projectedShape2.min = dot(axis, shape2->sides[0].start);
 		projectedShape2.max = projectedShape2.min;
 		for (int i = 1; i < shape2->sidesCount; i++){
-			double point = dot(axis, shape2->sides[0].start);
+			double point = dot(axis,(vec2){shape2->sides[i].start[0] + shape2->position[0],
+					shape2->sides[i].start[1] + shape2->position[1]} );
 			if ( point < projectedShape2.min){
 				projectedShape2.min = point;
 			}
@@ -126,11 +137,15 @@ bool Collides(shape *shape1, shape* shape2){
 				projectedShape2.max = point;
 			}
 		}
-		bool contains = (projectedShape1.min > projectedShape2.min && projectedShape1.min < projectedShape2.max)
-			|| (projectedShape1.max > projectedShape2.min && projectedShape1.max < projectedShape2.max  );
+		bool contains = ((projectedShape1.min > projectedShape2.min && projectedShape1.min < projectedShape2.max)
+			|| (projectedShape1.max > projectedShape2.min && projectedShape1.max < projectedShape2.max  ))
+			||
+			   ((projectedShape2.min > projectedShape1.min && projectedShape2.min < projectedShape1.max)
+			|| (projectedShape2.max > projectedShape1.min && projectedShape2.max < projectedShape1.max ));
 		if (!contains){
 			return false;
 		}
+
 
 	}
 	return true;

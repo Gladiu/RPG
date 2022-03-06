@@ -16,15 +16,12 @@ void InitPlayer(player* inputPlayer, mat4* projection)
 	// 4 is number of state for each direction player can be facing
 	InitSprite(&(inputPlayer->sprite),4 ,&inputPlayer->model, projection, &inputPlayer->view, "../source/textures/character.png");
 	inputPlayer->collisionShape.sides = calloc(1, sizeof(line)*4);
-	vec2 playerPos; 
-	playerPos[0] = inputPlayer->model[3][0];
-	playerPos[1] = inputPlayer->model[3][1];
 	line lines[4] = {0.0f, 0.0f, 0.0f, 1.0f,
 			 0.0f, 1.0f, 1.0f, 1.0f,
 			 1.0f, 1.0f, 1.0f, 0.0f,
 			 1.0f, 0.0f, 0.0f, 0.0f};
 
-	InitShape(&inputPlayer->collisionShape, playerPos, 0, 4, lines);
+	InitShape(&inputPlayer->collisionShape, (vec2){inputPlayer->model[3][0], inputPlayer->model[3][1]}, 0, 4, lines);
 
 }
 
@@ -71,7 +68,7 @@ void DrawPlayer(player* inputPlayer, double currentTime)
 void MoveWithPhysicsPlayer(player *inputPlayer, vec2 movement, float deltaTime, float speedFactor)
 {
 	// Normalising movement vector 
-	double vectorLength = sqrt(movement[0]*movement[0] +movement[1]*movement[1]);
+	double vectorLength = sqrt(movement[0]*movement[0] + movement[1]*movement[1]);
 	if (vectorLength != 0){
 		movement[0] /= vectorLength;
 		movement[1] /= vectorLength;
@@ -79,12 +76,16 @@ void MoveWithPhysicsPlayer(player *inputPlayer, vec2 movement, float deltaTime, 
 	
 	// Moving hitbox and sprite
 	// Sprite is updating becouse it holds pointer to players model matrix
+	
 	inputPlayer->velocity[0] = movement[0] * deltaTime * speedFactor;
 	inputPlayer->velocity[1] = movement[1] * deltaTime * speedFactor;
 	inputPlayer->model[3][0] += inputPlayer->velocity[0];
 	inputPlayer->model[3][1] += inputPlayer->velocity[1];
 
+	SetPosShape(&inputPlayer->collisionShape, (vec2){inputPlayer->model[3][0], inputPlayer->model[3][1]});
+
 	// Since we are moving our player we need to move camera with him
 	inputPlayer->view[3][0] = -inputPlayer->model[3][0];
 	inputPlayer->view[3][1] = -inputPlayer->model[3][1];
+
 }

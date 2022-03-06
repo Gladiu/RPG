@@ -8,15 +8,12 @@ void InitDestructible(destructible* inputDestructible, mat4* projection, mat4 *v
 	glm_mat4_identity(inputDestructible->model);
 	InitSprite(&(inputDestructible->sprite),4 ,&inputDestructible->model, projection, inputDestructible->view, "../source/textures/crate.png");
 	inputDestructible->collisionShape.sides = calloc(1, sizeof(line)*4);
-	vec2 playerPos; 
-	playerPos[0] = inputDestructible->model[3][0];
-	playerPos[1] = inputDestructible->model[3][1];
 	line lines[4] = {0.0f, 0.0f, 0.0f, 1.0f,
 			 0.0f, 1.0f, 1.0f, 1.0f,
 			 1.0f, 1.0f, 1.0f, 0.0f,
 			 1.0f, 0.0f, 0.0f, 0.0f};
 
-	InitShape(&inputDestructible->collisionShape, playerPos, 0, 4, lines);
+	InitShape(&inputDestructible->collisionShape,(vec2){inputDestructible->model[3][0], inputDestructible->model[3][1]} , 0, 4, lines);
 
 }
 

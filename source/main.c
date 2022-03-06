@@ -148,8 +148,15 @@ int main()
 		light->position[0] = mainPlayer->model[3][0];
 		light->position[1] = mainPlayer->model[3][1];
 		light->position[2] = mainPlayer->model[3][2];
-		if ( Collides(&mainPlayer->collisionShape, &crate->collisionShape)){
-			fprintf(stderr, "ugabuga\r\n");
+
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_C)){
+			bool check = Collides(&mainPlayer->collisionShape, &crate->collisionShape);
+			if (check){
+				fprintf(stderr, "Collided\n");
+			}
+			else{
+				fprintf(stderr, "Not collided\n");
+			}
 		}
 		// All draw calls should be issued here
 		DrawTiles(tilePtr, nowTime, light);

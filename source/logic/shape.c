@@ -55,7 +55,8 @@ bool Collides(shape *shape1, shape* shape2){
 		}projection;
 		
 		projection projectedShape1;
-		projectedShape1.min = dot(axis, shape1->sides[0].start);
+		projectedShape1.min = dot(axis,(vec2){shape1->sides[i].start[0] + shape1->position[0],
+				shape1->sides[i].start[1] + shape1->position[1]} );
 		projectedShape1.max = projectedShape1.min;
 		for (int i = 1; i < shape1->sidesCount; i++){
 			double point = dot(axis,(vec2){shape1->sides[i].start[0] + shape1->position[0],
@@ -63,12 +64,12 @@ bool Collides(shape *shape1, shape* shape2){
 			if ( point < projectedShape1.min){
 				projectedShape1.min = point;
 			}
-			if ( point > projectedShape1.max){
+			else if ( point > projectedShape1.max){
 				projectedShape1.max = point;
 			}
 		}
 		projection projectedShape2;
-		projectedShape2.min = dot(axis, shape1->sides[0].start);
+		projectedShape2.min = dot(axis, shape2->sides[0].start);
 		projectedShape2.max = projectedShape2.min;
 		for (int i = 1; i < shape2->sidesCount; i++){
 			double point = dot(axis,(vec2){shape2->sides[i].start[0] + shape2->position[0],
@@ -76,19 +77,18 @@ bool Collides(shape *shape1, shape* shape2){
 			if ( point < projectedShape2.min){
 				projectedShape2.min = point;
 			}
-			if ( point > projectedShape2.max){
+			else if ( point > projectedShape2.max){
 				projectedShape2.max = point;
 			}
 		}
 		fprintf(stderr, "i = %d\n", i);
 		fprintf(stderr, "projectedShape1.min =  %f projectedShape1.max = %f\n", projectedShape1.min, projectedShape1.max);
 		fprintf(stderr, "projectedShape2.min =  %f projectedShape2.max = %f\n", projectedShape2.min, projectedShape2.max);
-		bool contains = ((projectedShape1.min > projectedShape2.min && projectedShape1.min < projectedShape2.max)
-			|| (projectedShape1.max > projectedShape2.min && projectedShape1.max < projectedShape2.max  ))
-			||
-			   ((projectedShape2.min > projectedShape1.min && projectedShape2.min < projectedShape1.max)
-			|| (projectedShape2.max > projectedShape1.min && projectedShape2.max < projectedShape1.max ));
-		if (!contains){
+		bool twoContainsOne = ((projectedShape1.min > projectedShape2.min && projectedShape1.min < projectedShape2.max)
+			|| (projectedShape1.max > projectedShape2.min && projectedShape1.max < projectedShape2.max  ));
+		bool oneContainsTwo = ((projectedShape2.min > projectedShape1.min && projectedShape2.min < projectedShape1.max)
+			|| (projectedShape2.max > projectedShape1.min && projectedShape2.max < projectedShape1.max  ));
+		if (!(oneContainsTwo || twoContainsOne)){
 			return false;
 		}
 	}
@@ -112,7 +112,8 @@ bool Collides(shape *shape1, shape* shape2){
 		}projection;
 		
 		projection projectedShape1;
-		projectedShape1.min = dot(axis, shape2->sides[0].start);
+		projectedShape1.min = dot(axis,(vec2){shape1->sides[i].start[0] + shape1->position[0],
+				shape1->sides[i].start[1] + shape1->position[1]} );
 		projectedShape1.max = projectedShape1.min;
 		for (int i = 1; i < shape1->sidesCount; i++){
 			double point = dot(axis,(vec2){shape1->sides[i].start[0] + shape1->position[0],
@@ -120,7 +121,7 @@ bool Collides(shape *shape1, shape* shape2){
 			if ( point < projectedShape1.min){
 				projectedShape1.min = point;
 			}
-			if ( point > projectedShape1.max){
+			else if ( point > projectedShape1.max){
 				projectedShape1.max = point;
 			}
 		}
@@ -137,15 +138,14 @@ bool Collides(shape *shape1, shape* shape2){
 				projectedShape2.max = point;
 			}
 		}
-		bool contains = ((projectedShape1.min > projectedShape2.min && projectedShape1.min < projectedShape2.max)
-			|| (projectedShape1.max > projectedShape2.min && projectedShape1.max < projectedShape2.max  ))
-			||
-			   ((projectedShape2.min > projectedShape1.min && projectedShape2.min < projectedShape1.max)
-			|| (projectedShape2.max > projectedShape1.min && projectedShape2.max < projectedShape1.max ));
-		if (!contains){
+
+		bool twoContainsOne = ((projectedShape1.min > projectedShape2.min && projectedShape1.min < projectedShape2.max)
+			|| (projectedShape1.max > projectedShape2.min && projectedShape1.max < projectedShape2.max  ));
+		bool oneContainsTwo = ((projectedShape2.min > projectedShape1.min && projectedShape2.min < projectedShape1.max)
+			|| (projectedShape2.max > projectedShape1.min && projectedShape2.max < projectedShape1.max  ));
+		if (!(oneContainsTwo || twoContainsOne)){
 			return false;
 		}
-
 
 	}
 	return true;

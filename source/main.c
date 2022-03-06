@@ -148,7 +148,9 @@ int main()
 		light->position[0] = mainPlayer->model[3][0];
 		light->position[1] = mainPlayer->model[3][1];
 		light->position[2] = mainPlayer->model[3][2];
-		
+		if ( Collides(&mainPlayer->collisionShape, &crate->collisionShape)){
+			fprintf(stderr, "ugabuga\r\n");
+		}
 		// All draw calls should be issued here
 		DrawTiles(tilePtr, nowTime, light);
 		DrawPlayer(mainPlayer, nowTime);

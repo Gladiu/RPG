@@ -114,13 +114,18 @@ int main()
 
 	// Player is holding view matrix and rest is having just a pointer
 	InitPlayer(mainPlayer, &generalProjection);
+	mainPlayer->model[3][0] = 5.0f;
+	mainPlayer->model[3][1] = 5.0f;
+
 	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 5, 5, "../source/textures/tile.png");
 	InitDestructible(crate, &generalProjection, &mainPlayer->view);
 
+
 	// Initializing variables to keep track of time
 	double nowTime = 0;
-	double lastTime = 0;
+	double lastTime = GetTime(); // lastTime is current time here to not make deltaTime equal to nowTime at first iteration
 	double deltaTime = 0;
+
 	// Setting main game loop
 	while(!glfwWindowShouldClose(mainWindow))
 	{
@@ -142,27 +147,37 @@ int main()
 			move[0] = move[0]-1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]+1;
+
+		// Minimal Translation Vector
+		vec2 *MTV = calloc(1,sizeof(vec2));
+
+		bool check = Collides(&mainPlayer->collisionShape, &crate->collisionShape, MTV);
+
+		//fprintf(stderr, "MTV[0] = %10f, MTV[1] = %10f \n", MTV[0], MTV[1]);
+		float tempPlayerPos[3] = {0.0f, 0.0f, 0.0f};
+		tempPlayerPos[0] = mainPlayer->model[3][0];
+		tempPlayerPos[1] = mainPlayer->model[3][1];
+		tempPlayerPos[2] = mainPlayer->model[3][2];
+		
 		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 1); // Magic value is temporary
+
+		if ( check){
+			mainPlayer->model[3][0] = tempPlayerPos[0];
+			mainPlayer->model[3][1] = tempPlayerPos[1];
+			mainPlayer->model[3][2] = tempPlayerPos[2];
+		}
 		
 		// Debug moving light along with the player
 		light->position[0] = mainPlayer->model[3][0];
 		light->position[1] = mainPlayer->model[3][1];
 		light->position[2] = mainPlayer->model[3][2];
-
-		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_C)){
-			bool check = Collides(&mainPlayer->collisionShape, &crate->collisionShape);
-			if (check){
-				fprintf(stderr, "Collided\n");
-			}
-			else{
-				fprintf(stderr, "Not collided\n");
-			}
-		}
+		
 		// All draw calls should be issued here
 		DrawTiles(tilePtr, nowTime, light);
 		DrawPlayer(mainPlayer, nowTime);
 		DrawDestructible(crate, nowTime);
 		glfwSwapBuffers(mainWindow);
+		free(MTV);
 	}
 
 	return 0;

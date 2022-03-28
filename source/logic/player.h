@@ -25,4 +25,6 @@ void InitPlayer(player* inputPlayer, mat4* projection);
 
 void DrawPlayer(player* inputPlayer, double currentTime);
 
-void MoveWithPhysicsPlayer(player* inputPlayer, vec2 movement, float deltaTime, float speedFactor);
+void CalculateVelocity(player* inputPlayer, vec2 movement, float deltaTime, float speedFactor);
+
+void ApplyVelocity(player* inputPlayer);

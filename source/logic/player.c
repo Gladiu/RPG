@@ -79,6 +79,10 @@ void MoveWithPhysicsPlayer(player *inputPlayer, vec2 movement, float deltaTime, 
 	
 	inputPlayer->velocity[0] = movement[0] * deltaTime * speedFactor;
 	inputPlayer->velocity[1] = movement[1] * deltaTime * speedFactor;
+}
+
+void ApplyVelocity(player *inputPlayer){
+
 	inputPlayer->model[3][0] += inputPlayer->velocity[0];
 	inputPlayer->model[3][1] += inputPlayer->velocity[1];
 

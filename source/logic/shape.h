@@ -20,9 +20,12 @@ typedef struct shape
 
 void InitShape(shape* inputShape, vec2 position, float angle, int sidesCount, line sides[sidesCount]);
 
+void DestroyShape(shape* inputShape);
+
 void SetPosShape(shape* inputShape, vec2 desiredPosition);
 
 void SetAngleShape(shape* inputShape, float angle);
 
-bool Collides(shape* shape1, shape* shape2);
+bool Collides(shape* shape1, shape* shape2, vec2* MTV);
 
+void IfWillCollideTrimSpeed(shape* movingShape, vec2* speed, int shapeCount, shape* shapeArray[shapeCount]);

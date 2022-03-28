@@ -65,7 +65,7 @@ void DrawPlayer(player* inputPlayer, double currentTime)
 	}
 }
 
-void MoveWithPhysicsPlayer(player *inputPlayer, vec2 movement, float deltaTime, float speedFactor)
+void CalculateVelocity(player *inputPlayer, vec2 movement, float deltaTime, float speedFactor)
 {
 	// Normalising movement vector 
 	double vectorLength = sqrt(movement[0]*movement[0] + movement[1]*movement[1]);

@@ -232,10 +232,26 @@ bool Collides(shape *shape1, shape* shape2, vec2* MTV){
 	return true;
 }
 
-void IfWillCollideTrimSpeed(shape* inputShape, vec2 *speed, int shapeCount, shape* shapeArray[shapeCount]){
-	for (int i = 0; i < shapeCount; i++){
+void IfWillCollideTrimSpeed(shape* inputShape, vec2 *velocity, int shapeCount, shape* shapeArray[shapeCount]){
+	vec2 defaultPosition;
+	defaultPosition[0] = inputShape->position[0];
+	defaultPosition[1] = inputShape->position[1];
+	// Iterating over 00 01 10 11 to find what combination of speed needs to be zeroed
+	for (unsigned int mask = 0; mask < 4; mask++){
+		for (int i = 0; i < shapeCount; i++){
 
-		// Entire point of this function is not to use MTV
-		Collides(inputShape, shapeArray[i], &(vec2){0.0f, 0.0f});
+			inputShape->position[0] = defaultPosition[0] + (*velocity)[0]*(mask & 1);
+			inputShape->position[1] = defaultPosition[1] + (*velocity)[1]*((mask & 2) >> 1);
+			// Entire point of this function is not to use MTV by cutting speed
+			if (Collides(inputShape, shapeArray[i], &(vec2){0.0f, 0.0f})){
+				if (mask & 1){
+					(*velocity)[0] = 0;
+				}
+				if (mask & 2){
+					(*velocity)[1] = 0;
+				}
+			}
+
+		}
 	}
 }

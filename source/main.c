@@ -151,22 +151,14 @@ int main()
 		// Minimal Translation Vector
 		vec2 *MTV = calloc(1,sizeof(vec2));
 
-		bool check = Collides(&mainPlayer->collisionShape, &crate->collisionShape, MTV);
-
-		//fprintf(stderr, "MTV[0] = %10f, MTV[1] = %10f \n", MTV[0], MTV[1]);
-		float tempPlayerPos[3] = {0.0f, 0.0f, 0.0f};
-		tempPlayerPos[0] = mainPlayer->model[3][0];
-		tempPlayerPos[1] = mainPlayer->model[3][1];
-		tempPlayerPos[2] = mainPlayer->model[3][2];
 		
-		MoveWithPhysicsPlayer(mainPlayer, move, deltaTime, 1); // Magic value is temporary
+		CalculateVelocity(mainPlayer,move, deltaTime, 1);
 
-		if ( check){
-			mainPlayer->model[3][0] = tempPlayerPos[0];
-			mainPlayer->model[3][1] = tempPlayerPos[1];
-			mainPlayer->model[3][2] = tempPlayerPos[2];
-		}
+		// DEBUG
+		shape *shapeArray[1] = {&crate->collisionShape};
+		IfWillCollideTrimSpeed(&mainPlayer->collisionShape, &mainPlayer->velocity, 1, shapeArray);
 		
+		ApplyVelocity(mainPlayer);
 		// Debug moving light along with the player
 		light->position[0] = mainPlayer->model[3][0];
 		light->position[1] = mainPlayer->model[3][1];

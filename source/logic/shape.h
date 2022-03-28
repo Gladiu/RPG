@@ -28,4 +28,4 @@ void SetAngleShape(shape* inputShape, float angle);
 
 bool Collides(shape* shape1, shape* shape2, vec2* MTV);
 
-void IfWillCollideTrimSpeed(shape* movingShape, vec2* speed, int shapeCount, shape* shapeArray[shapeCount]);
+void IfWillCollideTrimSpeed(shape* movingShape, vec2* velocity, int shapeCount, shape* shapeArray[shapeCount]);

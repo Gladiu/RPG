@@ -9,6 +9,7 @@ add_executable(Game main.c
 		logic/player.c
 		logic/shape.c
 		logic/destructible.c
+		libs/nxjson/nxjson.c
 	)
 target_link_libraries(Game
 	-lGLEW -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -lSOIL -lm

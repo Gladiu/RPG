@@ -13,5 +13,8 @@ cd build
 make
 ```
 
-Currently only runs on linux but windows should work if you link glfw and soil
-I will do it once this thing will be worth it :D
+using cglm for math
+https://github.com/recp/cglm
+
+using nxjson for parsing json files
+https://github.com/thestr4ng3r/nxjson

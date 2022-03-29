@@ -10,3 +10,7 @@ typedef struct map
 	shape *colliderShapeArray;
 	tiles *colliderTileArray;
 }map;
+
+void InitMap(int mapFileSize, char pathToMapFile[mapFileSize]);
+
+void DrawMap(map *inputMap);

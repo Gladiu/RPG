@@ -129,7 +129,6 @@ bool Collides(shape *shape1, shape* shape2, vec2* MTV){
 			double overlap = fabs(max-min);
 			if (overlap < smallestOverlap){
 				smallestOverlap = overlap;
-	fprintf(stderr, "axis[0] = %f, axis[1] = %f \n", axis[0], axis[1]);
 				(*MTV)[0] = axis[0];
 				(*MTV)[1] = axis[1];
 			}
@@ -221,14 +220,12 @@ bool Collides(shape *shape1, shape* shape2, vec2* MTV){
 			if (overlap < smallestOverlap){
 				smallestOverlap = overlap;
 
-	fprintf(stderr, "axis[0] = %f, axis[1] = %f \n", axis[0], axis[1]);
 				(*MTV)[0] = axis[0];
 				(*MTV)[1] = axis[1];
 			}
 		}
 
 	}
-	fprintf(stderr, "MTV[0] = %f, MTV[1] = %f \n", *MTV[0], *MTV[1]);
 	return true;
 }
 

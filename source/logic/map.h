@@ -8,9 +8,10 @@ typedef struct map
 	background background;
 	int colliderCount;
 	shape *colliderShapeArray;
-	tiles *colliderTileArray;
+	int tileCount;
+	tiles *tilesArray;
 }map;
 
-void InitMap(int mapFileSize, char pathToMapFile[mapFileSize]);
+void InitMap(map *inputMap, char pathToMapFile[]);
 
-void DrawMap(map *inputMap);
+void DrawMap(map *inputMap, mat4 *projection, mat4 *view, double currentTime);

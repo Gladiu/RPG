@@ -13,8 +13,6 @@ typedef struct tiles
 	GLuint VBO; // Vertex Buffer Object
 	GLuint tex0; // Texture index
 	GLuint shaderProgram;
-	mat4* projection;
-	mat4* view;
 	mat4 model;
 	double lastUpdateTime;
 	unsigned int currentFrame;
@@ -22,6 +20,6 @@ typedef struct tiles
 }tiles;
 
 
-void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t height, size_t width, char texturePath[]);
+void InitTiles(tiles* inputTiles, int *map, size_t height, size_t width, const char texturePath[]);
 
-void DrawTiles(tiles* inputTiles, double currentTime, point_light* inputLight);
+void DrawTiles(tiles* inputTile, mat4* projection, mat4* view, double currentTime);

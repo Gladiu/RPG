@@ -1,14 +1,16 @@
 {
-	"accesibleArea": [
+	"tiles": [
 		{
-		"texturePath": "/path/to/texture",
-		"randomTiles": true,
 		"position": [0.0, 0.0],
-		"sides":[
-			0.0, 0.0, 0.0, 1.0,
-			0.0, 1.0, 1.0, 1.0,
-			1.0, 1.0, 1.0, 0.0,
-			1.0, 0.0, 0.0, 0.0
+		"texturePath": "../source/textures/tile.png",
+		"randomTiles": true,
+		"randomTileCount": 10,
+		"shape":
+		[
+			[0, 0, 0],
+			[0, 1, 0],
+			[0, 1, 0],
+			[1, 1, 1]
 		]
 		}
 	]

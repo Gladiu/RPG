@@ -13,6 +13,7 @@
 #include "render/sprite.h"
 #include "logic/player.h"
 #include "logic/destructible.h"
+#include "logic/map.h"
 
 // Debug includes
 #include <inttypes.h>
@@ -58,6 +59,7 @@ int main()
 	struct Vector2 windowSize;
 	windowSize.x = 800;
 	windowSize.y = 600;
+
 	// Setting up glfw
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -75,6 +77,7 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(mainWindow);
+
 	// Setting key callback function
 	glfwSetKeyCallback(mainWindow, KeyCallback);
 
@@ -90,36 +93,24 @@ int main()
 	glEnable              ( GL_DEBUG_OUTPUT );
 	glDebugMessageCallback( MessageCallback, 0 );
 	
-	int map[25]=
-	{
-		1,1,1,1,1,
-		1,1,1,1,1,
-		1,1,1,1,1,
-		1,1,1,1,1,
-		1,1,1,1,1,
-	};
 
-	tiles *tilePtr = calloc(1, sizeof(tiles));
-	player *mainPlayer = calloc(1, sizeof(player));
-	point_light *light = calloc(1, sizeof(point_light));
-	destructible *crate = calloc(1, sizeof(destructible));
 
-	// Initializing light DEBUG
-	light->strength = 3.0f;
+	/*
+	 *
+	 * Initializing Game variables
+	 *
+	 */
 
-	// Creating globla projection matrix
+	map *testMap = calloc(1, sizeof(map));
+	InitMap(testMap, "../source/map/test.json");
+
 	mat4 generalProjection;
 	glm_mat4_identity(generalProjection);
 	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, generalProjection);
 
+	player *mainPlayer = calloc(1, sizeof(player));
 	// Player is holding view matrix and rest is having just a pointer
 	InitPlayer(mainPlayer, &generalProjection);
-	mainPlayer->model[3][0] = 5.0f;
-	mainPlayer->model[3][1] = 5.0f;
-
-	InitTiles(tilePtr, &generalProjection, &mainPlayer->view, map, 5, 5, "../source/textures/tile.png");
-	InitDestructible(crate, &generalProjection, &mainPlayer->view);
-
 
 	// Initializing variables to keep track of time
 	double nowTime = 0;
@@ -133,9 +124,11 @@ int main()
 		nowTime = GetTime();
 		deltaTime = nowTime-lastTime;
 		lastTime = nowTime;
+
 		// Setting clear color
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f); // Gray color
 		glClear(GL_COLOR_BUFFER_BIT);
+
 		// Handling input
 		// Magic values are temporary for testing
 		vec2 move = {0.0, 0.0};
@@ -148,28 +141,20 @@ int main()
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]+1;
 
-		// Minimal Translation Vector
-		vec2 *MTV = calloc(1,sizeof(vec2));
-
 		
 		CalculateVelocity(mainPlayer,move, deltaTime, 1);
 
 		// DEBUG
-		shape *shapeArray[1] = {&crate->collisionShape};
-		IfWillCollideTrimSpeed(&mainPlayer->collisionShape, &mainPlayer->velocity, 1, shapeArray);
+		
+		//shape *shapeArray[1] = {&crate->collisionShape};
+		//IfWillCollideTrimSpeed(&mainPlayer->collisionShape, &mainPlayer->velocity, 1, shapeArray);
 		
 		ApplyVelocity(mainPlayer);
-		// Debug moving light along with the player
-		light->position[0] = mainPlayer->model[3][0];
-		light->position[1] = mainPlayer->model[3][1];
-		light->position[2] = mainPlayer->model[3][2];
 		
+		DrawMap(testMap, &generalProjection, &(mainPlayer->view), nowTime);
 		// All draw calls should be issued here
-		DrawTiles(tilePtr, nowTime, light);
 		DrawPlayer(mainPlayer, nowTime);
-		DrawDestructible(crate, nowTime);
 		glfwSwapBuffers(mainWindow);
-		free(MTV);
 	}
 
 	return 0;

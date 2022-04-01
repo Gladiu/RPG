@@ -10,7 +10,7 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t height, size_t width, char texturePath[])
+void InitTiles(tiles* inputTiles, int *map, size_t height, size_t width, const char texturePath[])
 {
 	// TODO its Debug only
 	// Setting animation proprieties
@@ -19,8 +19,6 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 
 	inputTiles->lastUpdateTime = 0.0f;
 
-	inputTiles->projection = projection;
-	inputTiles->view = view;
 	glm_mat4_identity(inputTiles->model);
 	float tileVertices[48]=
 	{
@@ -41,7 +39,8 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 		for(int x = 0; x < width; x++)
 		{
 			int tileIndex = y * width + x;
-			if(map[tileIndex] > 0) // Can later use map[tileIndex] to determine texture
+			fprintf(stderr, "map[tileIndex] = %d\n", map[tileIndex]);
+			if(map[tileIndex] > 0) 
 			{
 				for(int i = 0; i < 6; i++)
 				{	
@@ -159,25 +158,24 @@ void InitTiles(tiles* inputTiles, mat4* projection, mat4* view, int *map, size_t
 	free(vertices);
 }
 
-void DrawTiles(tiles* inputTile, double currentTime, point_light* inputLight)
-{
+void DrawTiles(tiles* inputTile, mat4* projection, mat4* view, double currentTime){
 
 	glUseProgram(inputTile->shaderProgram);
 
 	GLint lightPosLoc = glGetUniformLocation(inputTile->shaderProgram, "lightPos");
-	glUniform3f(lightPosLoc, inputLight->position[0], inputLight->position[1], inputLight->position[2]);
+	//glUniform3f(lightPosLoc, inputLight->position[0], inputLight->position[1], inputLight->position[2]);
 
 	GLint lightStrengthLoc = glGetUniformLocation(inputTile->shaderProgram, "lightStrength");
-	glUniform1f(lightStrengthLoc, inputLight->strength);
+	//glUniform1f(lightStrengthLoc, inputLight->strength);
 	
 	GLint modelLoc = glGetUniformLocation(inputTile->shaderProgram, "model");
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)inputTile->model );
 
 	GLint viewLoc = glGetUniformLocation(inputTile->shaderProgram, "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)inputTile->view);
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)view);
 
 	GLint projectionLoc = glGetUniformLocation(inputTile->shaderProgram, "projection");
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)inputTile->projection);
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)projection);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, inputTile->tex0);

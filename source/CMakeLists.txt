@@ -8,6 +8,7 @@ add_executable(Game main.c
 		render/sprite.c
 		logic/player.c
 		logic/shape.c
+		logic/map.c
 		logic/destructible.c
 		libs/nxjson/nxjson.c
 	)

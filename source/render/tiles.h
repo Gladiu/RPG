@@ -20,6 +20,6 @@ typedef struct tiles
 }tiles;
 
 
-void InitTiles(tiles* inputTiles, int *map, size_t height, size_t width, const char texturePath[]);
+void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, size_t width, const char texturePath[], vec2 maxTextureTileIndex);
 
 void DrawTiles(tiles* inputTile, mat4* projection, mat4* view, double currentTime);

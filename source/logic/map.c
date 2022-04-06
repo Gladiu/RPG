@@ -48,7 +48,7 @@ void InitMap(map* inputMap, char pathToMapFile[]){
 				}
 
 			}
-			InitTiles(&(inputMap->tilesArray[i]), tileShape, ySize, xSize, texturePath);
+			InitTiles(&(inputMap->tilesArray[i]),true , tileShape, ySize, xSize, texturePath, (vec2){4.0, 4.0});
 			free(tileShape);
 		}
 	}

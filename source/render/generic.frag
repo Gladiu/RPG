@@ -3,10 +3,12 @@
 in vec2 fromVertexTexCoord;
 in vec4 fromVertexPos;
 in vec3 fromVertexNormal;
+
 uniform sampler2D inputTexture0;
 uniform float lightStrength;
 uniform vec3 lightPos;
 uniform mat4 model;
+
 out vec4 color;
 
 float lookUpTable[16] = float[16]( 0.0, 0.0625, 0.125, 0.1875, 0.25,

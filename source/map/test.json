@@ -2,15 +2,17 @@
 	"tiles": [
 		{
 		"position": [0.0, 0.0],
-		"texturePath": "../source/textures/tile.png",
-		"randomTiles": true,
-		"randomTileCount": 10,
+		"texturePath": "../source/textures/tileSet.png",
+		"animated":false,
+		"randomTiles":{ "size":[4, 4] },
+		"setTiles":false,
 		"shape":
 		[
-			[0, 0, 0],
-			[0, 1, 0],
-			[0, 1, 0],
-			[1, 1, 1]
+			[1, 1,1,1,1,1,1,1, 1],
+			[1, 1,1,1,1,1,1,1, 1],
+			[1, 1,1,1,1,1,1,1, 1],
+			[1, 1,1,1,1,1,1,1, 1],
+			[1, 1,1,1,1,1,1,1, 1]
 		]
 		}
 	]

@@ -7,18 +7,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "../libs/cglm/cglm.h"
 
-void InitTiles(tiles* inputTiles, int *map, size_t height, size_t width, const char texturePath[])
-{
+void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, size_t width, const char texturePath[], vec2 maxTextureTileIndex){
+
+
 	// TODO its Debug only
 	// Setting animation proprieties
 	inputTiles->currentFrame = 0;
 	inputTiles->totalAnimationFrames = 1;
-
 	inputTiles->lastUpdateTime = 0.0f;
 
+	srand(time(0));
+	
 	glm_mat4_identity(inputTiles->model);
 	float tileVertices[48]=
 	{
@@ -34,25 +37,38 @@ void InitTiles(tiles* inputTiles, int *map, size_t height, size_t width, const c
 	// Creating mesh based on map input to draw entire tilemap at once
 	// if it creates a lot of troubles can later divide it into smaller meshes
 	float *vertices = malloc(48*(width)*(height)*sizeof(float));
-	for(int y = 0; y < height; y++)
-	{
-		for(int x = 0; x < width; x++)
-		{
+	for(int y = 0; y < height; y++){
+		for(int x = 0; x < width; x++){
+
 			int tileIndex = y * width + x;
-			fprintf(stderr, "map[tileIndex] = %d\n", map[tileIndex]);
-			if(map[tileIndex] > 0) 
-			{
-				for(int i = 0; i < 6; i++)
-				{	
-					for(int j = 0; j < 8; j++)
-					{
+			if (randomTiles){
+				// Generating random tile index but keeping 0 as it was 
+
+				int randomIndex = (random() % (int)((maxTextureTileIndex[0] * maxTextureTileIndex[1]) - 2)) + 1;
+				map[tileIndex] = map[tileIndex] * randomIndex;
+			}
+			if (map[tileIndex] > 0){
+				for(int i = 0; i < 6; i++){	
+					for(int j = 0; j < 8; j++){
+
 						int vertexIndex = i*8+j;
-						if(j == 0)
+						if (j == 0){
 							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex] + (float)x);
-						if(j == 1)
+						}
+						if (j == 1){
 							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex] + (float)y);
-						if(j > 1) 
+						}
+						if (j == 2 || j > 4){
 							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex]);
+						}
+						if (j == 3){
+							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex]/maxTextureTileIndex[0]);
+							vertices[tileIndex*48+vertexIndex] += (map[tileIndex] % (int)(maxTextureTileIndex[0]))/maxTextureTileIndex[0];
+						}
+						if (j == 4){
+							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex]/maxTextureTileIndex[1]);
+							vertices[tileIndex*48+vertexIndex] += (map[tileIndex] / (int)(maxTextureTileIndex[1]))/maxTextureTileIndex[1];
+						}
 
 					}
 				}

@@ -33,14 +33,16 @@ void InitMap(map* inputMap, char pathToMapFile[]){
 			const char* texturePath = nx_json_get(currentTiles, "texturePath")->text_value;
 			const nx_json* shape = nx_json_get(currentTiles, "shape");
 
+			bool random = nx_json_get(currentTiles, "randomTiles")->num.u_value;
+
 			size_t ySize = shape->children.length;
 			size_t xSize = nx_json_item(shape, 0)->children.length;
 			int *tileShape = calloc(1, sizeof(int) * xSize * ySize); // Becouse i cant into 2D arrays
 			for (int y = 0; y < ySize; y++){
 				const nx_json* xShapeRow = nx_json_item(shape, y);
 				for (int x = 0; x < xSize; x++){
-					if ( nx_json_item(xShapeRow, x)->num.u_value == 1){
-						tileShape[y*xSize + x] = 1;
+					if ( nx_json_item(xShapeRow, x)->num.u_value != 0){
+						tileShape[y*xSize + x] = nx_json_item(xShapeRow, x)->num.u_value;
 					}
 					else{
 						tileShape[y*xSize + x] = 0;
@@ -48,7 +50,7 @@ void InitMap(map* inputMap, char pathToMapFile[]){
 				}
 
 			}
-			InitTiles(&(inputMap->tilesArray[i]),true , tileShape, ySize, xSize, texturePath, (vec2){4.0, 4.0});
+			InitTiles(&(inputMap->tilesArray[i]),random, tileShape, ySize, xSize, texturePath);
 			free(tileShape);
 		}
 	}

@@ -11,7 +11,7 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, size_t width, const char texturePath[], vec2 maxTextureTileIndex){
+void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, size_t width, const char texturePath[]){
 
 
 	// TODO its Debug only
@@ -20,8 +20,16 @@ void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, siz
 	inputTiles->totalAnimationFrames = 1;
 	inputTiles->lastUpdateTime = 0.0f;
 
-	srand(time(0));
+	// Loading texture image here to get texture size to know how many tiles are there
+	int textureWidth, textureHeight;
+	unsigned char *image = SOIL_load_image(texturePath, &textureWidth, &textureHeight, 0, SOIL_LOAD_RGB);
+	vec2 maxTextureTileIndex;
+	maxTextureTileIndex[0] = (int)(textureWidth)/16;
+	maxTextureTileIndex[1] = (int)(textureHeight)/16;
 	
+	// Generating seed for random tile picking
+	srand(time(0));
+
 	glm_mat4_identity(inputTiles->model);
 	float tileVertices[48]=
 	{
@@ -35,19 +43,17 @@ void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, siz
 	};
 	
 	// Creating mesh based on map input to draw entire tilemap at once
-	// if it creates a lot of troubles can later divide it into smaller meshes
 	float *vertices = malloc(48*(width)*(height)*sizeof(float));
 	for(int y = 0; y < height; y++){
 		for(int x = 0; x < width; x++){
 
 			int tileIndex = y * width + x;
 			if (randomTiles){
-				// Generating random tile index but keeping 0 as it was 
-
-				int randomIndex = (random() % (int)((maxTextureTileIndex[0] * maxTextureTileIndex[1]) - 2)) + 1;
-				map[tileIndex] = map[tileIndex] * randomIndex;
+				int randomIndex = random() % (int)(maxTextureTileIndex[0] * maxTextureTileIndex[1] ) + 1;
+				map[tileIndex] = map[tileIndex] != 0 ? randomIndex : 0;
 			}
 			if (map[tileIndex] > 0){
+				inputTiles->tileCount++;
 				for(int i = 0; i < 6; i++){	
 					for(int j = 0; j < 8; j++){
 
@@ -63,11 +69,12 @@ void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, siz
 						}
 						if (j == 3){
 							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex]/maxTextureTileIndex[0]);
-							vertices[tileIndex*48+vertexIndex] += (map[tileIndex] % (int)(maxTextureTileIndex[0]))/maxTextureTileIndex[0];
+							vertices[tileIndex*48+vertexIndex] += (map[tileIndex] % (int)(maxTextureTileIndex[0]) - 1.0f)/maxTextureTileIndex[0];
 						}
 						if (j == 4){
 							vertices[tileIndex*48+vertexIndex] = (tileVertices[vertexIndex]/maxTextureTileIndex[1]);
-							vertices[tileIndex*48+vertexIndex] += (map[tileIndex] / (int)(maxTextureTileIndex[1]))/maxTextureTileIndex[1];
+							vertices[tileIndex*48+vertexIndex] += ((map[tileIndex]-1) / (int)(maxTextureTileIndex[0] ))/maxTextureTileIndex[1];
+
 						}
 
 					}
@@ -156,8 +163,6 @@ void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, siz
 	glBindVertexArray(0);
 
 	// Generating Textures
-	int textureWidth, textureHeight;
-	unsigned char *image = SOIL_load_image(texturePath, &textureWidth, &textureHeight, 0, SOIL_LOAD_RGB);
 	glGenTextures(1, &inputTiles->tex0);
 	glBindTexture(GL_TEXTURE_2D, inputTiles->tex0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -204,7 +209,7 @@ void DrawTiles(tiles* inputTile, mat4* projection, mat4* view, double currentTim
 	glUniform1f(totalAnimationFramesLoc, inputTile->totalAnimationFrames);
 	
 	glBindVertexArray(inputTile->VAO);
-	glDrawArrays(GL_TRIANGLES, 0, 6*25);
+	glDrawArrays(GL_TRIANGLES, 0, 6*inputTile->tileCount);
 	glBindVertexArray(0);
 
 	if (currentTime - inputTile->lastUpdateTime > 0.50f){

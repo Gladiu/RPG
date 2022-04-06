@@ -17,9 +17,10 @@ typedef struct tiles
 	double lastUpdateTime;
 	unsigned int currentFrame;
 	unsigned int totalAnimationFrames;
+	unsigned int tileCount;
 }tiles;
 
 
-void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, size_t width, const char texturePath[], vec2 maxTextureTileIndex);
+void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, size_t width, const char texturePath[]);
 
 void DrawTiles(tiles* inputTile, mat4* projection, mat4* view, double currentTime);

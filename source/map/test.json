@@ -14,5 +14,10 @@
 			[4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
 		]
 		}
+	],
+	"models": [
+		{
+		"modelPath": "../source/models/cube.glb"
+		}
 	]
 }

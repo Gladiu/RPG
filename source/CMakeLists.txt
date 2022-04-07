@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.16.3)
 project(VideoGame) 
 set(CMAKE_BUILD_TYPE Debug)
-add_compile_options(-g)
+add_compile_options(-Wextra -Wall -g)
 
 add_executable(Game main.c
 		render/tiles.c
 		render/sprite.c
+		render/model.c
 		logic/player.c
 		logic/shape.c
 		logic/map.c

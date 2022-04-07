@@ -1,5 +1,6 @@
 #include "map.h"
 #include "../render/tiles.h"
+#include "../render/model.h"
 
 #include "../libs/nxjson/nxjson.h"
 #include "../libs/cglm/cglm.h"
@@ -23,7 +24,7 @@ void InitMap(map* inputMap, char pathToMapFile[]){
 	
 	if (map){
 
-		// Unpacking 
+		// Unpacking tiles
 		const nx_json* tilesArray= nx_json_get(map, "tiles");
  		inputMap->tileCount = tilesArray->children.length;
 		inputMap->tilesArray = calloc(1, sizeof(tiles) * tilesArray->children.length );
@@ -52,6 +53,19 @@ void InitMap(map* inputMap, char pathToMapFile[]){
 			}
 			InitTiles(&(inputMap->tilesArray[i]),random, tileShape, ySize, xSize, texturePath);
 			free(tileShape);
+		}
+
+		// Unpacking models
+		const nx_json* modelArray= nx_json_get(map, "models");
+ 		inputMap->modelCount = modelArray->children.length;
+		inputMap->modelArray = calloc(1, sizeof(tiles) * modelArray->children.length );
+
+		for (int i = 0; i < modelArray->children.length; i++){
+			const nx_json* currentModel = nx_json_item(modelArray, i);
+			const char* texturePath = NULL;//nx_json_get(currentModel, "texturePath")->text_value;
+			const char* modelPath = nx_json_get(currentModel, "modelPath")->text_value;
+
+			InitModel(&(inputMap->modelArray[i]), modelPath, texturePath);
 		}
 	}
 }

@@ -15,33 +15,92 @@
 
 void InitModel(model *inputModel, const char modelPath[], const char texturePath[]){
 
+
+
 	// Loading Model from file
 	cgltf_options options = {0};
 	cgltf_data* data = NULL;
 	cgltf_result result = cgltf_parse_file(&options, modelPath, &data);
+	cgltf_load_buffers(&options, data, modelPath);
 
-
-	// Enabling and binding buffers buffers
-	float *vertices;
-	for ( int meshIndex = 0; meshIndex< data->meshes_count; meshIndex++){
-		for
-	}
-
-
+	inputModel->meshCount = data->meshes_count;
+	inputModel->VBOArray = calloc(1, inputModel->meshCount*sizeof(int));
+	inputModel->meshVertexCount = calloc(1, inputModel->meshCount*sizeof(int));
+	glm_mat4_identity(inputModel->model);
 	
+	// Enabling and binding buffers buffers
 	glGenVertexArrays(1, &inputModel->VAO);
-	glGenBuffers(1, &inputModel->VBO);
-	glGenBuffers(1, &inputModel->EBO);
-
+	glGenBuffers(inputModel->meshCount, inputModel->VBOArray);
 	glBindVertexArray(inputModel->VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, inputModel->VBO);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(float)*30, vertices, GL_STATIC_DRAW);
+	for ( int currentMeshIndex = 0; currentMeshIndex < data->meshes_count; currentMeshIndex++){
+		cgltf_mesh *currentMesh = &data->meshes[currentMeshIndex];
+		for (int currentPrimitiveIndex = 0; currentPrimitiveIndex < currentMesh->primitives_count; currentPrimitiveIndex++){
+			cgltf_primitive *currentPrimitive = &currentMesh->primitives[currentPrimitiveIndex];
+			vec3 *position = NULL;
+			vec2 *texCoord = NULL;
+			vec3 *normal = NULL;
+			size_t vertexCount = 0;
+			for (int currentAttributeIndex = 0; currentAttributeIndex < currentPrimitive->attributes_count; currentAttributeIndex++){
+				cgltf_attribute *currentAttribute = &currentPrimitive->attributes[currentAttributeIndex];
+				if ( currentAttribute->type == cgltf_attribute_type_position){
+					 position = calloc(1, currentAttribute->data->count * 3 * sizeof(float));
+					//size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
+					 //cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)position, floatsToUnpack);
+					 cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)position, currentAttribute->data->count*3);
+					 //vertexCount = floatsToUnpack/3;
+						vertexCount = currentAttribute->data->count;
+				}
+				if ( currentAttribute->type == cgltf_attribute_type_texcoord){
+					 texCoord = calloc(1, currentAttribute->data->count * 2 * sizeof(float));
+					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
+					 cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)texCoord, floatsToUnpack);
+				}
+				if ( currentAttribute->type == cgltf_attribute_type_normal){
+					 normal = calloc(1, currentAttribute->data->count * 3 * sizeof(float));
+					size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
+					 cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)normal, floatsToUnpack);
+				}
+			}
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)(0));
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,5 * sizeof(float), (GLvoid*)(3*sizeof(float)));
-	glEnableVertexAttribArray(1);
+			// Procesing all the data to fit it into one VBO
+			
+			float *VBOData = calloc(1, sizeof(float)*(3+2+3)*vertexCount);
+			inputModel->meshVertexCount[currentMeshIndex] = vertexCount;
+			for ( int i = 0; i < vertexCount; i++){
+				VBOData[i*8 + 0] = (position[i])[0];
+				VBOData[i*8 + 1] = (position[i])[1];
+				VBOData[i*8 + 2] = (position[i])[2];
+				VBOData[i*8 + 3] = (texCoord[i])[0];
+				VBOData[i*8 + 4] = (texCoord[i])[1];
+				VBOData[i*8 + 5] = (normal[i])[0];
+				VBOData[i*8 + 6] = (normal[i])[1];
+				VBOData[i*8 + 7] = (normal[i])[2];
+			}
+			
+			glBindBuffer(GL_ARRAY_BUFFER, inputModel->VBOArray[currentMeshIndex]);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*(3+2+3)*vertexCount, VBOData, GL_STATIC_DRAW);
+
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(0));
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(3*sizeof(float)));
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(5*sizeof(float)));
+			glEnableVertexAttribArray(2);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+			free(VBOData);
+			free(position);
+			free(texCoord);
+			free(normal);
+
+		}
+	}
+
+	// Disabling buffers
+	glBindVertexArray(0);
+
 	// Creating Shaders
 	
 	FILE *f = fopen("../source/render/generic.frag", "rb");
@@ -100,9 +159,6 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 
-	// Disabling buffers
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
 
 	// TODO Texture support
 	if ( 0 ) {
@@ -124,30 +180,36 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 	cgltf_free(data);
 }
 
-void DrawModel(model* inputModel, unsigned int currentState, unsigned int currentFrame)
+void DrawModel(model* inputModel, mat4 *projection, mat4 *view)
 {
 	glUseProgram(inputModel->shaderProgram);
 	
-	GLint modelLoc = glGetUniformLocation(inputModel->shaderProgram, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)inputModel->model);
 
+
+	GLint modelLoc = glGetUniformLocation(inputModel->shaderProgram, "model");
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)inputModel->model );
+
+	GLint viewLoc = glGetUniformLocation(inputModel->shaderProgram, "view");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)view);
+
+	GLint projectionLoc = glGetUniformLocation(inputModel->shaderProgram, "projection");
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)projection);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, inputModel->tex0);
 	glUniform1i(glGetUniformLocation(inputModel->shaderProgram,"inputTexture0"), 0);
 
-	GLint animationFrameLoc = glGetUniformLocation(inputModel->shaderProgram, "frameNumber");
-	glUniform1f(animationFrameLoc, (float)currentFrame);
 
 	GLint totalAnimationFramesLoc = glGetUniformLocation(inputModel->shaderProgram, "totalAnimationFrames");
 	glUniform1f(totalAnimationFramesLoc, 8.0f); // TODO change to be variable
 
-	GLint stateNumberLoc = glGetUniformLocation(inputModel->shaderProgram, "stateNumber");
-	glUniform1f(stateNumberLoc, (float)currentState);
-
 	glBindVertexArray(inputModel->VAO);
-	
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	int totalVertexCount = 0;
+	for ( int i = 0; i<inputModel->meshCount; i++){
+		totalVertexCount += inputModel->meshVertexCount[i];
+	}
+	glDrawArrays(GL_TRIANGLES, 0, totalVertexCount);
 
 	glBindVertexArray(0);
 }

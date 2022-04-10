@@ -74,4 +74,7 @@ void DrawMap(map *inputMap, mat4 *projection, mat4 *view, double currentTime){
 	for (int i = 0; i < inputMap->tileCount; i++){
 		DrawTiles(&(inputMap->tilesArray[i]), projection, view, currentTime);
 	}
+	for (int i = 0; i < inputMap->modelCount; i++){
+		DrawModel(&(inputMap->modelArray[i]), projection, view);
+	}
 }

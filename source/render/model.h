@@ -7,8 +7,9 @@
 typedef struct model
 {
 	GLuint VAO; // Vertex Array Object
-	GLuint EBO; //
-	GLuint VBO; // Vertex Buffer Object
+	unsigned int meshCount;
+	GLuint *VBOArray; // Vertex Buffer Object for each mesh
+	unsigned int *meshVertexCount;
 	GLuint tex0; // Texture index
 	GLuint shaderProgram;
 	mat4 model;
@@ -17,4 +18,4 @@ typedef struct model
 
 void InitModel(model* inputModel,const char modelPath[],const char texturePath[]);
 
-void DrawModel(model* inputModel, unsigned int currentState, unsigned int currentFrame);
+void DrawModel(model* inputModel, mat4 *projection, mat4 *view);

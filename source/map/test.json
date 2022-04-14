@@ -17,7 +17,7 @@
 	],
 	"models": [
 		{
-		"modelPath": "../source/models/WaterBottle.glb"
+		"modelPath": "../source/models/SM_Deccer_Cubes.glb"
 		}
 	]
 }

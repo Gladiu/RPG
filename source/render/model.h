@@ -4,12 +4,16 @@
 
 // Model are 3D models used in world
 
+typedef struct mesh{
+	GLuint VAO;
+	GLuint VBO;
+	GLuint EBO;
+	unsigned int indiceCount;
+}mesh;
 typedef struct model
 {
-	GLuint VAO; // Vertex Array Object
 	unsigned int meshCount;
-	GLuint *VBOArray; // Vertex Buffer Object for each mesh
-	unsigned int *meshVertexCount;
+	mesh *meshArray;
 	GLuint tex0; // Texture index
 	GLuint shaderProgram;
 	mat4 model;

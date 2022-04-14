@@ -3,17 +3,29 @@
 #include "../libs/cglm/cglm.h"
 
 // Model are 3D models used in world
+// I hope you suffer when reading this
+// as much as i suffered writing this
 
-typedef struct mesh{
+// Node is instance of a mesh
+typedef struct node{
+	mat4 model;
+	unsigned int meshIndex;
+}node;
+
+// Primitives correspond to the data required for GPU draw calls
+typedef struct primitive{
 	GLuint VAO;
 	GLuint VBO;
 	GLuint EBO;
 	unsigned int indiceCount;
-}mesh;
+}primitive;
+
 typedef struct model
 {
+	unsigned int *primitiveCount;
 	unsigned int meshCount;
-	mesh *meshArray;
+	// Mesh is array of primitives
+	primitive **meshArray;
 	GLuint tex0; // Texture index
 	GLuint shaderProgram;
 	mat4 model;

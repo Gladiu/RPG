@@ -24,36 +24,47 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 	cgltf_load_buffers(&options, data, modelPath);
 
 	inputModel->meshCount = data->meshes_count;
-	inputModel->meshArray = calloc(1, sizeof(mesh)*inputModel->meshCount);
+	inputModel->meshArray = calloc(1, sizeof(primitive*) * inputModel->meshCount);
+	for (int currentMeshIndex = 0; currentMeshIndex < data->meshes_count; currentMeshIndex++){
+		(inputModel->meshArray)[currentMeshIndex] = calloc(1, sizeof(primitive) * data->meshes[currentMeshIndex].primitives_count);
+	}
+
 	glm_mat4_identity(inputModel->model);
 	
 	// Enabling and binding buffers buffers
 
 	for ( int currentMeshIndex = 0; currentMeshIndex < data->meshes_count; currentMeshIndex++){
 		cgltf_mesh *currentMesh = &data->meshes[currentMeshIndex];
-		glGenVertexArrays(1, &inputModel->meshArray[currentMeshIndex].VAO);
-		glGenBuffers(1, &inputModel->meshArray[currentMeshIndex].VBO);
-		glGenBuffers(1, &inputModel->meshArray[currentMeshIndex].EBO);
-		glBindVertexArray(inputModel->meshArray[currentMeshIndex].VAO);
+
 		for (int currentPrimitiveIndex = 0; currentPrimitiveIndex < currentMesh->primitives_count; currentPrimitiveIndex++){
 			cgltf_primitive *currentPrimitive = &currentMesh->primitives[currentPrimitiveIndex];
+
+			glGenVertexArrays(1, &inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].VAO);
+			glGenBuffers(1, &inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].VBO);
+			glGenBuffers(1, &inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].EBO);
+			glBindVertexArray(inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].VAO);
+
 			vec3 *position = NULL;
 			vec2 *texCoord = NULL;
 			vec3 *normal = NULL;
 			size_t vertexCount = 0;
+
 			for (int currentAttributeIndex = 0; currentAttributeIndex < currentPrimitive->attributes_count; currentAttributeIndex++){
 				cgltf_attribute *currentAttribute = &currentPrimitive->attributes[currentAttributeIndex];
+
 				if ( currentAttribute->type == cgltf_attribute_type_position){
 					 position = calloc(1, currentAttribute->data->count * 3 * sizeof(float));
 					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
 					 cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)position, floatsToUnpack);
 					 vertexCount = floatsToUnpack/3;
 				}
+
 				if ( currentAttribute->type == cgltf_attribute_type_texcoord){
 					 texCoord = calloc(1, currentAttribute->data->count * 2 * sizeof(float));
 					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
 					 cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)texCoord, floatsToUnpack);
 				}
+
 				if ( currentAttribute->type == cgltf_attribute_type_normal){
 					 normal = calloc(1, currentAttribute->data->count * 3 * sizeof(float));
 					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
@@ -64,6 +75,7 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 			// Procesing all the data to fit it into one VBO
 			
 			float *VBOData = calloc(1, sizeof(float)*(3+2+3)*vertexCount);
+
 			for ( int i = 0; i < vertexCount; i++){
 				VBOData[i*8 + 0] = (position[i])[0];
 				VBOData[i*8 + 1] = (position[i])[1];
@@ -74,16 +86,17 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 				VBOData[i*8 + 6] = (normal[i])[1];
 				VBOData[i*8 + 7] = (normal[i])[2];
 			}
-			inputModel->meshArray[currentMeshIndex].indiceCount = currentPrimitive->indices->count;
+			inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].indiceCount = currentPrimitive->indices->count;
 			unsigned int* indices = calloc(1,currentPrimitive->indices->count *sizeof(unsigned int));
+
 			for (int currentIndiceIndex = 0; currentIndiceIndex  < currentPrimitive->indices->count; currentIndiceIndex++){
 				indices[currentIndiceIndex] = cgltf_accessor_read_index(currentPrimitive->indices,currentIndiceIndex);
 			}
 			
-			glBindBuffer(GL_ARRAY_BUFFER, inputModel->meshArray[currentMeshIndex].VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].VBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*(3+2+3)*vertexCount, VBOData, GL_STATIC_DRAW);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, inputModel->meshArray[currentMeshIndex].EBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].EBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, currentPrimitive->indices->count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(0));
@@ -210,10 +223,12 @@ void DrawModel(model* inputModel, mat4 *projection, mat4 *view)
 	glUniform1f(totalAnimationFramesLoc, 8.0f); // TODO change to be variable
 	
 	for (int meshIndex = 0; meshIndex < inputModel->meshCount; meshIndex++){
-		glBindVertexArray(inputModel->meshArray[meshIndex].VAO);
+		for (int primitiveIndex = 0; primitiveIndex < inputModel->primitiveCount[meshIndex]; primitiveIndex++){
+			glBindVertexArray(inputModel->meshArray[meshIndex][primitiveIndex].VAO);
 
-		glDrawElements(GL_TRIANGLES, inputModel->meshArray[meshIndex].indiceCount, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, inputModel->meshArray[meshIndex][primitiveIndex].indiceCount, GL_UNSIGNED_INT, 0);
 
-		glBindVertexArray(0);
-	}
+			glBindVertexArray(0);
+		}
+	
 }

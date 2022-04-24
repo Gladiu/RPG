@@ -8,6 +8,7 @@
 
 // Node is instance of a mesh
 typedef struct node{
+	// node model matrix is relative to model matrix
 	mat4 model;
 	unsigned int meshIndex;
 }node;
@@ -22,10 +23,14 @@ typedef struct primitive{
 
 typedef struct model
 {
+	// Mesh is array of primitives
 	unsigned int *primitiveCount;
 	unsigned int meshCount;
-	// Mesh is array of primitives
 	primitive **meshArray;
+
+	int nodeCount;
+	node *nodeArray;
+
 	GLuint tex0; // Texture index
 	GLuint shaderProgram;
 	mat4 model;

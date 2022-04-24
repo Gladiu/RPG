@@ -24,12 +24,12 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 	cgltf_load_buffers(&options, data, modelPath);
 
 	inputModel->meshCount = data->meshes_count;
+	inputModel->nodeCount = data->nodes_count;
 	inputModel->meshArray = calloc(1, sizeof(primitive*) * inputModel->meshCount);
 	for (int currentMeshIndex = 0; currentMeshIndex < data->meshes_count; currentMeshIndex++){
 		(inputModel->meshArray)[currentMeshIndex] = calloc(1, sizeof(primitive) * data->meshes[currentMeshIndex].primitives_count);
 	}
 
-	glm_mat4_identity(inputModel->model);
 	
 	// Enabling and binding buffers buffers
 
@@ -115,10 +115,47 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 			free(indices);
 
 		}
+		// Reading nodes from file to get instance of meshes
+		for (int currentNodeIndex = 0; currentNodeIndex < data->nodes_count; currentNodeIndex++){
+			cgltf_node *currentNode = &data->nodes[currentNodeIndex];
+
+			if (currentNode->mesh == currentMesh){
+				inputModel->nodeArray[currentNodeIndex].meshIndex = currentMeshIndex;
+
+				if (currentNode->has_matrix){
+					glm_mat4_copy((vec4*)(currentNode->matrix), inputModel->nodeArray[currentNodeIndex].model);
+				}
+				else{
+					mat4 T;
+					glm_mat4_identity(T);
+					mat4 R;
+					glm_mat4_identity(R);
+					mat4 S;
+					glm_mat4_identity(S);
+
+					if (currentNode->has_translation){
+						glm_translate_to(T, currentNode->translation, T);
+					}
+
+					if (currentNode->has_rotation){
+						glm_euler_xyz(currentNode->rotation, T);
+					}
+
+					if (currentNode->has_scale){
+						glm_scale(S, currentNode->scale);
+					}
+					mat4 temp;
+					glm_mat4_mul(T, R, temp);
+					glm_mat4_mul(temp,S, inputModel->nodeArray[currentNodeIndex].model);
+				}
+			}
+		}
 	}
 
 	// Disabling buffers
 	glBindVertexArray(0);
+
+
 
 	// Creating Shaders
 	
@@ -201,34 +238,37 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 
 void DrawModel(model* inputModel, mat4 *projection, mat4 *view)
 {
-	glUseProgram(inputModel->shaderProgram);
-	
+	for ( int currentNodeIndex = 0; currentNodeIndex < inputModel->nodeCount; currentNodeIndex++){
+		node *currentNode = &inputModel->nodeArray[currentNodeIndex];
+
+		for ( int currentPrimitiveIndex = 0; currentPrimitiveIndex < inputModel->primitiveCount[currentNode->meshIndex]; currentPrimitiveIndex++){
+			glUseProgram(inputModel->shaderProgram);
+			
+			mat4 totalModel;
+			glm_mat4_mul(inputModel->model, currentNode->model, totalModel);
+			GLint modelLoc = glGetUniformLocation(inputModel->shaderProgram, "model");
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)totalModel );
+
+			GLint viewLoc = glGetUniformLocation(inputModel->shaderProgram, "view");
+			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)view);
+
+			GLint projectionLoc = glGetUniformLocation(inputModel->shaderProgram, "projection");
+			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)projection);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, inputModel->tex0);
+			glUniform1i(glGetUniformLocation(inputModel->shaderProgram,"inputTexture0"), 0);
 
 
-	GLint modelLoc = glGetUniformLocation(inputModel->shaderProgram, "model");
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)inputModel->model );
+			GLint totalAnimationFramesLoc = glGetUniformLocation(inputModel->shaderProgram, "totalAnimationFrames");
+			glUniform1f(totalAnimationFramesLoc, 8.0f); // TODO change to be variable
+			
 
-	GLint viewLoc = glGetUniformLocation(inputModel->shaderProgram, "view");
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)view);
-
-	GLint projectionLoc = glGetUniformLocation(inputModel->shaderProgram, "projection");
-	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)projection);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, inputModel->tex0);
-	glUniform1i(glGetUniformLocation(inputModel->shaderProgram,"inputTexture0"), 0);
-
-
-	GLint totalAnimationFramesLoc = glGetUniformLocation(inputModel->shaderProgram, "totalAnimationFrames");
-	glUniform1f(totalAnimationFramesLoc, 8.0f); // TODO change to be variable
-	
-	for (int meshIndex = 0; meshIndex < inputModel->meshCount; meshIndex++){
-		for (int primitiveIndex = 0; primitiveIndex < inputModel->primitiveCount[meshIndex]; primitiveIndex++){
-			glBindVertexArray(inputModel->meshArray[meshIndex][primitiveIndex].VAO);
+			glBindVertexArray(inputModel->meshArray[currentNode->meshIndex]);
 
 			glDrawElements(GL_TRIANGLES, inputModel->meshArray[meshIndex][primitiveIndex].indiceCount, GL_UNSIGNED_INT, 0);
 
 			glBindVertexArray(0);
 		}
-	
+	}
 }

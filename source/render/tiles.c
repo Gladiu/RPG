@@ -1,8 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <SOIL/SOIL.h>
 
 #include "tiles.h"
+#include "image.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +22,12 @@ void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, siz
 
 	// Loading texture image here to get texture size to know how many tiles are there
 	int textureWidth, textureHeight;
-	unsigned char *image = SOIL_load_image(texturePath, &textureWidth, &textureHeight, 0, SOIL_LOAD_RGB);
+
+	FILE *textureFile = fopen(texturePath, "rb");
+
+	unsigned char *image = LoadImageFromFile(textureFile, &textureWidth, &textureHeight, 0, 3); // 4 is from stbi docs for rgba
+
+	fclose(textureFile);
 	vec2 maxTextureTileIndex;
 	maxTextureTileIndex[0] = (int)(textureWidth)/16;
 	maxTextureTileIndex[1] = (int)(textureHeight)/16;
@@ -171,7 +176,8 @@ void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, siz
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
-	SOIL_free_image_data(image);
+	FreeImage(image);
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	free(genericVertexShader);

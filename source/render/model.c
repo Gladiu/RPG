@@ -3,9 +3,9 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <SOIL/SOIL.h>
 
 #include "model.h"
+#include "image.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +13,7 @@
 
 #include "../libs/cglm/cglm.h"
 
-void InitModel(model *inputModel, const char modelPath[], const char texturePath[]){
+void InitModel(model *inputModel, const char modelPath[]){
 
 
 
@@ -23,52 +23,59 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 	cgltf_result result = cgltf_parse_file(&options, modelPath, &data);
 	cgltf_load_buffers(&options, data, modelPath);
 
+	glm_mat4_identity(inputModel->model);
+
 	inputModel->meshCount = data->meshes_count;
-	inputModel->nodeCount = data->nodes_count;
 	inputModel->meshArray = calloc(1, sizeof(primitive*) * inputModel->meshCount);
-	for (int currentMeshIndex = 0; currentMeshIndex < data->meshes_count; currentMeshIndex++){
-		(inputModel->meshArray)[currentMeshIndex] = calloc(1, sizeof(primitive) * data->meshes[currentMeshIndex].primitives_count);
+	for (int meshIndex = 0; meshIndex < data->meshes_count; meshIndex++){
+		inputModel->meshArray[meshIndex] = calloc(1, sizeof(primitive) * data->meshes[meshIndex].primitives_count);
 	}
+
+	inputModel->primitiveCount = calloc(1, sizeof(int) * inputModel->meshCount);
+
+	inputModel->nodeCount = data->nodes_count;
+	inputModel->nodeArray = calloc(1, sizeof(node) * inputModel->nodeCount);
 
 	
 	// Enabling and binding buffers buffers
 
-	for ( int currentMeshIndex = 0; currentMeshIndex < data->meshes_count; currentMeshIndex++){
-		cgltf_mesh *currentMesh = &data->meshes[currentMeshIndex];
+	for ( int meshIndex = 0; meshIndex < data->meshes_count; meshIndex++){
+		cgltf_mesh *mesh = &data->meshes[meshIndex];
+		inputModel->primitiveCount[meshIndex] = mesh->primitives_count;
 
-		for (int currentPrimitiveIndex = 0; currentPrimitiveIndex < currentMesh->primitives_count; currentPrimitiveIndex++){
-			cgltf_primitive *currentPrimitive = &currentMesh->primitives[currentPrimitiveIndex];
+		for (int primitiveIndex = 0; primitiveIndex < mesh->primitives_count; primitiveIndex++){
+			cgltf_primitive *primitive = &mesh->primitives[primitiveIndex];
 
-			glGenVertexArrays(1, &inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].VAO);
-			glGenBuffers(1, &inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].VBO);
-			glGenBuffers(1, &inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].EBO);
-			glBindVertexArray(inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].VAO);
+			glGenVertexArrays(1, &inputModel->meshArray[meshIndex][primitiveIndex].VAO);
+			glGenBuffers(1, &inputModel->meshArray[meshIndex][primitiveIndex].VBO);
+			glGenBuffers(1, &inputModel->meshArray[meshIndex][primitiveIndex].EBO);
+			glBindVertexArray(inputModel->meshArray[meshIndex][primitiveIndex].VAO);
 
 			vec3 *position = NULL;
 			vec2 *texCoord = NULL;
 			vec3 *normal = NULL;
 			size_t vertexCount = 0;
 
-			for (int currentAttributeIndex = 0; currentAttributeIndex < currentPrimitive->attributes_count; currentAttributeIndex++){
-				cgltf_attribute *currentAttribute = &currentPrimitive->attributes[currentAttributeIndex];
+			for (int AttributeIndex = 0; AttributeIndex < primitive->attributes_count; AttributeIndex++){
+				cgltf_attribute *Attribute = &primitive->attributes[AttributeIndex];
 
-				if ( currentAttribute->type == cgltf_attribute_type_position){
-					 position = calloc(1, currentAttribute->data->count * 3 * sizeof(float));
-					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
-					 cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)position, floatsToUnpack);
+				if ( Attribute->type == cgltf_attribute_type_position){
+					 position = calloc(1, Attribute->data->count * 3 * sizeof(float));
+					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(Attribute->data, NULL, 0);
+					 cgltf_accessor_unpack_floats(Attribute->data, (cgltf_float*)position, floatsToUnpack);
 					 vertexCount = floatsToUnpack/3;
 				}
 
-				if ( currentAttribute->type == cgltf_attribute_type_texcoord){
-					 texCoord = calloc(1, currentAttribute->data->count * 2 * sizeof(float));
-					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
-					 cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)texCoord, floatsToUnpack);
+				if ( Attribute->type == cgltf_attribute_type_texcoord){
+					 texCoord = calloc(1, Attribute->data->count * 2 * sizeof(float));
+					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(Attribute->data, NULL, 0);
+					 cgltf_accessor_unpack_floats(Attribute->data, (cgltf_float*)texCoord, floatsToUnpack);
 				}
 
-				if ( currentAttribute->type == cgltf_attribute_type_normal){
-					 normal = calloc(1, currentAttribute->data->count * 3 * sizeof(float));
-					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(currentAttribute->data, NULL, 0);
-					 cgltf_accessor_unpack_floats(currentAttribute->data, (cgltf_float*)normal, floatsToUnpack);
+				if ( Attribute->type == cgltf_attribute_type_normal){
+					 normal = calloc(1, Attribute->data->count * 3 * sizeof(float));
+					 size_t floatsToUnpack = cgltf_accessor_unpack_floats(Attribute->data, NULL, 0);
+					 cgltf_accessor_unpack_floats(Attribute->data, (cgltf_float*)normal, floatsToUnpack);
 				}
 			}
 
@@ -86,18 +93,18 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 				VBOData[i*8 + 6] = (normal[i])[1];
 				VBOData[i*8 + 7] = (normal[i])[2];
 			}
-			inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].indiceCount = currentPrimitive->indices->count;
-			unsigned int* indices = calloc(1,currentPrimitive->indices->count *sizeof(unsigned int));
+			inputModel->meshArray[meshIndex][primitiveIndex].indiceCount = primitive->indices->count;
+			unsigned int* indices = calloc(1,primitive->indices->count *sizeof(unsigned int));
 
-			for (int currentIndiceIndex = 0; currentIndiceIndex  < currentPrimitive->indices->count; currentIndiceIndex++){
-				indices[currentIndiceIndex] = cgltf_accessor_read_index(currentPrimitive->indices,currentIndiceIndex);
+			for (int IndiceIndex = 0; IndiceIndex  < primitive->indices->count; IndiceIndex++){
+				indices[IndiceIndex] = cgltf_accessor_read_index(primitive->indices,IndiceIndex);
 			}
 			
-			glBindBuffer(GL_ARRAY_BUFFER, inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, inputModel->meshArray[meshIndex][primitiveIndex].VBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(float)*(3+2+3)*vertexCount, VBOData, GL_STATIC_DRAW);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, inputModel->meshArray[currentMeshIndex][currentPrimitiveIndex].EBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, currentPrimitive->indices->count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, inputModel->meshArray[meshIndex][primitiveIndex].EBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, primitive->indices->count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(0));
 			glEnableVertexAttribArray(0);
@@ -114,16 +121,23 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 			free(normal);
 			free(indices);
 
+		// Checking what material the mesh has assigned 
+		for (int materialIndex = 0; materialIndex < data->materials_count; materialIndex++){
+			if(primitive->material == &data->materials[materialIndex]){
+				inputModel->meshArray[meshIndex][primitiveIndex].materialIndex = materialIndex;
+			}
+		}
+
 		}
 		// Reading nodes from file to get instance of meshes
-		for (int currentNodeIndex = 0; currentNodeIndex < data->nodes_count; currentNodeIndex++){
-			cgltf_node *currentNode = &data->nodes[currentNodeIndex];
+		for (int nodeIndex = 0; nodeIndex < data->nodes_count; nodeIndex++){
+			cgltf_node *currentNode = &data->nodes[nodeIndex];
 
-			if (currentNode->mesh == currentMesh){
-				inputModel->nodeArray[currentNodeIndex].meshIndex = currentMeshIndex;
+			if (currentNode->mesh == mesh){
+				inputModel->nodeArray[nodeIndex].meshIndex = meshIndex;
 
 				if (currentNode->has_matrix){
-					glm_mat4_copy((vec4*)(currentNode->matrix), inputModel->nodeArray[currentNodeIndex].model);
+					glm_mat4_copy((vec4*)(currentNode->matrix), inputModel->nodeArray[nodeIndex].model);
 				}
 				else{
 					mat4 T;
@@ -146,7 +160,7 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 					}
 					mat4 temp;
 					glm_mat4_mul(T, R, temp);
-					glm_mat4_mul(temp,S, inputModel->nodeArray[currentNodeIndex].model);
+					glm_mat4_mul(temp,S, inputModel->nodeArray[nodeIndex].model);
 				}
 			}
 		}
@@ -154,8 +168,6 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 
 	// Disabling buffers
 	glBindVertexArray(0);
-
-
 
 	// Creating Shaders
 	
@@ -214,23 +226,40 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 	}
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+	
+	inputModel->materialCount = data->materials_count;
+	inputModel->materialArray = calloc(1,sizeof(material)*inputModel->materialCount);
+	for (int materialIndex = 0; materialIndex < data->materials_count; materialIndex++){
+		cgltf_material *material = &data->materials[materialIndex];
+		cgltf_texture *texture = material->pbr_metallic_roughness.base_color_texture.texture;
+		if (material->has_pbr_metallic_roughness){
+			int textureWidth = 0;
+			int textureHeight = 0;
+			int channels = 0;
+			int forcedChannels = 4; // From stbi header
 
+			char *modelFolder = "../source/deccer-cubes/";
+			char *fullPath = malloc(strlen(texture->image->uri)+strlen(modelFolder)+1);
+			sprintf(fullPath, "%s%s\0", modelFolder,texture->image->uri);
+			FILE *textureFile = fopen(fullPath, "rb");
 
-	// TODO Texture support
-	if ( 0 ) {
-		int textureWidth, textureHeight;
-		unsigned char *image = SOIL_load_image(texturePath, &textureWidth, &textureHeight, 0, SOIL_LOAD_RGBA);
-		glGenTextures(1, &inputModel->tex0);
-		glBindTexture(GL_TEXTURE_2D, inputModel->tex0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		SOIL_free_image_data(image);
-		glBindTexture(GL_TEXTURE_2D, 0);
- 	}
+			unsigned char *textureData = LoadImageFromFile(textureFile, &textureWidth, &textureHeight, 0, 4); // 4 is from stbi docs for rgba
+
+			fclose(textureFile);
+			free(fullPath);
+			glGenTextures(1, &inputModel->materialArray[materialIndex].diffuseIndex);
+			glBindTexture(GL_TEXTURE_2D, inputModel->materialArray[materialIndex].diffuseIndex);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->sampler->wrap_s);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->sampler->wrap_t);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->sampler->min_filter);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->sampler->mag_filter);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			FreeImage(textureData);
+		}
+	}
 	free(genericFragmentShader);
 	free(genericVertexShader);
 	cgltf_free(data);
@@ -238,14 +267,17 @@ void InitModel(model *inputModel, const char modelPath[], const char texturePath
 
 void DrawModel(model* inputModel, mat4 *projection, mat4 *view)
 {
-	for ( int currentNodeIndex = 0; currentNodeIndex < inputModel->nodeCount; currentNodeIndex++){
-		node *currentNode = &inputModel->nodeArray[currentNodeIndex];
+	for ( int nodeIndex = 0; nodeIndex < inputModel->nodeCount; nodeIndex++){
+		node *renderedNode = &inputModel->nodeArray[nodeIndex];
+		int primitiveCount = inputModel->primitiveCount[renderedNode->meshIndex];
 
-		for ( int currentPrimitiveIndex = 0; currentPrimitiveIndex < inputModel->primitiveCount[currentNode->meshIndex]; currentPrimitiveIndex++){
+		for ( int primitiveIndex = 0; primitiveIndex < primitiveCount; primitiveIndex++){
+			primitive *renderedPrimitive = &(inputModel->meshArray[renderedNode->meshIndex][primitiveIndex]);
+			//material *renderedMaterial = &()
 			glUseProgram(inputModel->shaderProgram);
 			
 			mat4 totalModel;
-			glm_mat4_mul(inputModel->model, currentNode->model, totalModel);
+			glm_mat4_mul(inputModel->model, renderedNode->model, totalModel);
 			GLint modelLoc = glGetUniformLocation(inputModel->shaderProgram, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float*)totalModel );
 
@@ -256,7 +288,7 @@ void DrawModel(model* inputModel, mat4 *projection, mat4 *view)
 			glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (float*)projection);
 
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, inputModel->tex0);
+			glBindTexture(GL_TEXTURE_2D, inputModel->materialArray[renderedPrimitive->materialIndex].diffuseIndex);
 			glUniform1i(glGetUniformLocation(inputModel->shaderProgram,"inputTexture0"), 0);
 
 
@@ -264,9 +296,9 @@ void DrawModel(model* inputModel, mat4 *projection, mat4 *view)
 			glUniform1f(totalAnimationFramesLoc, 8.0f); // TODO change to be variable
 			
 
-			glBindVertexArray(inputModel->meshArray[currentNode->meshIndex]);
+			glBindVertexArray(renderedPrimitive->VAO);
 
-			glDrawElements(GL_TRIANGLES, inputModel->meshArray[meshIndex][primitiveIndex].indiceCount, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, renderedPrimitive->indiceCount, GL_UNSIGNED_INT, 0);
 
 			glBindVertexArray(0);
 		}

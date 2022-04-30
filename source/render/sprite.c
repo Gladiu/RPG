@@ -1,15 +1,15 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <SOIL/SOIL.h>
 
 #include "sprite.h"
-//#include "shader.h"
+#include "image.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "../libs/cglm/cglm.h"
+
 
 void InitSprite(sprite* inputSprite, unsigned int totalStates,mat4* model, mat4* projection, mat4* view, char texturePath[])
 {
@@ -109,8 +109,11 @@ void InitSprite(sprite* inputSprite, unsigned int totalStates,mat4* model, mat4*
 	glBindVertexArray(0);
 
 	// Generating Textures
-	int textureWidth, textureHeight;
-	unsigned char *image = SOIL_load_image(texturePath, &textureWidth, &textureHeight, 0, SOIL_LOAD_RGBA);
+	int textureWidth, textureHeight, channels;
+	FILE *textureFile = fopen(texturePath, "rb");
+	unsigned char *image = LoadImageFromFile(textureFile, &textureWidth, &textureHeight, 0, 4); // 4 is from stbi rgba
+	fclose(textureFile);
+
 	glGenTextures(1, &inputSprite->tex0);
 	glBindTexture(GL_TEXTURE_2D, inputSprite->tex0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -119,7 +122,7 @@ void InitSprite(sprite* inputSprite, unsigned int totalStates,mat4* model, mat4*
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
-	SOIL_free_image_data(image);
+	FreeImage(image);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	free(genericFragmentShader);

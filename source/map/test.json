@@ -17,7 +17,7 @@
 	],
 	"models": [
 		{
-		"modelPath": "../source/models/SM_Deccer_Cubes.glb"
+		"modelPath": "../source/deccer-cubes/SM_Deccer_Cubes_Textured.gltf"
 		}
 	]
 }

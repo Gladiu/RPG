@@ -1,3 +1,4 @@
+#include "libs/cglm/affine.h"
 #include "libs/cglm/cam.h"
 #include "libs/cglm/mat4.h"
 #include <stdio.h>
@@ -17,6 +18,9 @@
 
 // Debug includes
 #include <inttypes.h>
+
+#define WINDOW_HEIGHT 600.0f
+#define WINDOW_WIDTH 800.0f
 
 // Defining various callbacks
 
@@ -41,11 +45,6 @@ MessageCallback( GLenum source,
             type, severity, message );
 }
 
-typedef struct Vector2
-{
-	int x;
-	int y;
-}Vector2;
 
 // Get time in seconds with us precision
 double GetTime()
@@ -55,19 +54,15 @@ double GetTime()
 
 int main()
 {
-	// Setting main window size
-	struct Vector2 windowSize;
-	windowSize.x = 800;
-	windowSize.y = 600;
 
 	// Setting up glfw
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow *mainWindow = glfwCreateWindow(windowSize.x, windowSize.y,"Platform v0.01", NULL, NULL );
+	GLFWwindow *mainWindow = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT,"Platform v0.01", NULL, NULL );
 	glfwSetWindowAttrib(mainWindow, GLFW_FLOATING, GLFW_TRUE);
-	glfwSetWindowSize(mainWindow, windowSize.x, windowSize.y);
+	glfwSetWindowSize(mainWindow, WINDOW_WIDTH, WINDOW_HEIGHT);
 	glfwRestoreWindow(mainWindow);
 	fprintf(stderr, "Maximised window %d \n", glfwGetWindowAttrib(mainWindow, GLFW_MAXIMIZED));
 
@@ -90,9 +85,10 @@ int main()
 	}
 
 	// During init, enable debug output
-	glEnable              ( GL_DEBUG_OUTPUT );
+	glEnable ( GL_DEBUG_OUTPUT );
 	glDebugMessageCallback( MessageCallback, 0 );
 	
+	glEnable(GL_DEPTH_TEST);
 
 
 	/*
@@ -100,16 +96,15 @@ int main()
 	 * Initializing Game variables
 	 *
 	 */
-
 	map *testMap = calloc(1, sizeof(map));
 	InitMap(testMap, "../source/map/test.json");
 
 	mat4 generalProjection;
 	glm_mat4_identity(generalProjection);
-	glm_ortho(-6.0f, 6.0f, 4.0f, -4.0f, 1.0f, 100.0f, generalProjection);
+	//glm_rotate_y(generalProjection, glm_rad(180.0f), generalProjection);
+	glm_perspective(glm_rad(55.0f), WINDOW_WIDTH/WINDOW_HEIGHT, 0.1f , 100.0f, generalProjection);
 
 	player *mainPlayer = calloc(1, sizeof(player));
-	// Player is holding view matrix and rest is having just a pointer
 	InitPlayer(mainPlayer, &generalProjection);
 
 	// Initializing variables to keep track of time
@@ -127,7 +122,7 @@ int main()
 
 		// Setting clear color
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f); // Gray color
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Handling input
 		// Magic values are temporary for testing
@@ -140,6 +135,13 @@ int main()
 			move[0] = move[0]-1;
 		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_D))
 			move[0] = move[0]+1;
+
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_E)){
+			glm_rotate( mainPlayer->view , 2.0f*deltaTime, (vec4){1.0f, 0.0f, 0.0f, 0.0f} );
+		}
+		if (GLFW_PRESS == glfwGetKey(mainWindow, GLFW_KEY_Q)){
+			glm_rotate( mainPlayer->view , 2.0f*deltaTime, (vec4){0.0f, 1.0f, 0.0f, 0.0f} );
+		}
 
 		
 		CalculateVelocity(mainPlayer,move, deltaTime, 1);

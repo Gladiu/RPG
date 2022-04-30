@@ -19,7 +19,24 @@ typedef struct primitive{
 	GLuint VBO;
 	GLuint EBO;
 	unsigned int indiceCount;
+	unsigned int materialIndex;
 }primitive;
+
+typedef struct material{
+	GLuint diffuseIndex;
+	GLuint diffuseTexCoord;
+
+	GLuint normalIndex;
+	GLuint normalTexCoord;
+
+	GLuint occlusionIndex;
+	GLuint occlusionTexCoord;
+
+	GLuint emissiveIndex;
+	GLuint emissiveTexCoord;
+	vec3 emissiveFactor;
+
+}material;
 
 typedef struct model
 {
@@ -28,15 +45,18 @@ typedef struct model
 	unsigned int meshCount;
 	primitive **meshArray;
 
-	int nodeCount;
+	unsigned int nodeCount;
 	node *nodeArray;
 
-	GLuint tex0; // Texture index
-	GLuint shaderProgram;
+	unsigned int materialCount;
+	material *materialArray;
+
 	mat4 model;
+
+	GLuint shaderProgram;
 }model;
 
-
-void InitModel(model* inputModel,const char modelPath[],const char texturePath[]);
+void InitModel(model* inputModel,const char modelPath[]);
 
 void DrawModel(model* inputModel, mat4 *projection, mat4 *view);
+

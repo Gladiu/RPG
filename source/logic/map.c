@@ -58,14 +58,14 @@ void InitMap(map* inputMap, char pathToMapFile[]){
 		// Unpacking models
 		const nx_json* modelArray= nx_json_get(map, "models");
  		inputMap->modelCount = modelArray->children.length;
-		inputMap->modelArray = calloc(1, sizeof(tiles) * modelArray->children.length );
+		inputMap->modelArray = calloc(1, sizeof(model) * modelArray->children.length );
 
 		for (int i = 0; i < modelArray->children.length; i++){
 			const nx_json* currentModel = nx_json_item(modelArray, i);
 			const char* texturePath = NULL;//nx_json_get(currentModel, "texturePath")->text_value;
 			const char* modelPath = nx_json_get(currentModel, "modelPath")->text_value;
 
-			InitModel(&(inputMap->modelArray[i]), modelPath, texturePath);
+			InitModel(&(inputMap->modelArray[i]), modelPath);
 		}
 	}
 }

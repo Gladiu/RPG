@@ -1,7 +1,8 @@
 # ITS A VIDEO GAME WITH MEMORY LEAKS BEING MAIN FEATURE
 
 All textures are 16x16 and using PICO-8 colour palette
-Required dependency
+
+## Required dependency
 
 OpenGl 3.3
 
@@ -14,6 +15,8 @@ cmake -S source/ -B build/
 cd build
 make
 ```
+
+## Dependencies included in project
 
 using cglm for math
 <https://github.com/recp/cglm>

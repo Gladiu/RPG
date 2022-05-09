@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../libs/cglm/cglm.h"
+#include "../libs/cglm/include/cglm/cglm.h"
 
 void InitModel(model *inputModel, const char modelPath[]){
 

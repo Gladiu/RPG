@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../libs/cglm/cglm.h"
+#include "../libs/cglm/include/cglm/cglm.h"
 
 
 void InitSprite(sprite* inputSprite, unsigned int totalStates,mat4* model, mat4* projection, mat4* view, char texturePath[])

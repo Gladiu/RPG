@@ -1,6 +1,3 @@
-#include "libs/cglm/affine.h"
-#include "libs/cglm/cam.h"
-#include "libs/cglm/mat4.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,7 +5,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "libs/cglm/call.h"
+#include "libs/cglm/include/cglm/cglm.h"
 #include "render/tiles.h"
 #include "render/point_light.h"
 #include "render/sprite.h"

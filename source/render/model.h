@@ -1,6 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
-#include "../libs/cglm/cglm.h"
+#include "../libs/cglm/include/cglm/cglm.h"
 
 // Model are 3D models used in world
 // I hope you suffer when reading this

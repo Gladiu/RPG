@@ -3,7 +3,7 @@
 #include "../render/model.h"
 
 #include "../libs/nxjson/nxjson.h"
-#include "../libs/cglm/cglm.h"
+#include "../libs/cglm/include/cglm/cglm.h"
 
 #include "stdio.h"
 #include "stdlib.h"

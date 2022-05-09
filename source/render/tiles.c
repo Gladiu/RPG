@@ -9,7 +9,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "../libs/cglm/cglm.h"
+#include "../libs/cglm/include/cglm/cglm.h"
 
 void InitTiles(tiles* inputTiles, bool randomTiles, int *map, size_t height, size_t width, const char texturePath[]){
 

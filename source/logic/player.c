@@ -1,7 +1,7 @@
 #include "player.h"
 #include "shape.h"
 #include <math.h>
-#include "../libs/cglm/cglm.h"
+#include "../libs/cglm/include/cglm/cglm.h"
 
 void InitPlayer(player* inputPlayer, mat4* projection)
 {

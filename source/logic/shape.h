@@ -1,5 +1,5 @@
 #pragma once
-#include "../libs/cglm/call.h"
+#include "../libs/cglm/include/cglm/call.h"
 #include <stdbool.h>
 #include <stdlib.h>
 

@@ -2,10 +2,12 @@
 
 All textures are 16x16 and using PICO-8 colour palette
 Required dependency
-OpenGl 3.3 \
-GLFW3 \
 
-Compiling
+OpenGl 3.3
+
+GLFW3
+
+## Building
 
 ```bash
 cmake -S source/ -B build/

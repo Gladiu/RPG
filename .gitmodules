@@ -7,3 +7,6 @@
 [submodule "source/libs/nxjson"]
 	path = source/libs/nxjson
 	url = https://github.com/thestr4ng3r/nxjson.git
+[submodule "source/libs/stb"]
+	path = source/libs/stb
+	url = https://github.com/nothings/stb.git

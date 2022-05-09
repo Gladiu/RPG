@@ -1,6 +1,7 @@
 #include "player.h"
 #include "shape.h"
 #include <math.h>
+#include "../libs/cglm/cglm.h"
 
 void InitPlayer(player* inputPlayer, mat4* projection)
 {
@@ -11,7 +12,8 @@ void InitPlayer(player* inputPlayer, mat4* projection)
 
 	glm_mat4_identity(inputPlayer->view);
 	glm_mat4_identity(inputPlayer->model);
-	glm_translate(inputPlayer->view, (vec4){0.0f, 0.0f, -5.0f});
+	glm_rotate(inputPlayer->view, glm_rad(180), (vec4){1.0f, 0.0f, 0.0f, 0.0f});
+	glm_translate(inputPlayer->view, (vec4){0.0f, 0.0f, 5.0f});
 
 	// 4 is number of state for each direction player can be facing
 	InitSprite(&(inputPlayer->sprite),4 ,&inputPlayer->model, projection, &inputPlayer->view, "../source/textures/character.png");
@@ -90,6 +92,6 @@ void ApplyVelocity(player *inputPlayer){
 
 	// Since we are moving our player we need to move camera with him
 	inputPlayer->view[3][0] = -inputPlayer->model[3][0];
-	inputPlayer->view[3][1] = -inputPlayer->model[3][1];
+	inputPlayer->view[3][1] = inputPlayer->model[3][1];
 
 }

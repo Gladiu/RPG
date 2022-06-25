@@ -10,3 +10,6 @@
 [submodule "source/libs/stb"]
 	path = source/libs/stb
 	url = https://github.com/nothings/stb.git
+[submodule "source/deccer-cubes"]
+	path = source/deccer-cubes
+	url = https://github.com/GraphicsProgramming/deccer-cubes.git
